@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+  <div class="main">
+    <canvas></canvas>
+    <div class="status">Connecting...</div>
+  </div>
+  <div class="sidebar">
+    <header>Me</header>
+    <div class="me">
+      <table>
+        <tr>
+          <th>Name</th>
+          <td><input type="text" class="name" minlength="1" maxlength="20" disabled></td>
+        </tr>
+        <tr>
+          <th>Team</th>
+          <td><select class="team" disabled>
+            <option value="">(Select...)</option>
+            <option value="0">Team 0</option>
+            <option value="1">Team 1</option>
+          </select></td>
+        </tr>
+      </table>
+    </div>
+    <header>Players</header>
+    <div class="players">
+      <table>
+        <tbody class="team-0">
+          <tr><th>Team 0</th><th class="score"></th></tr></tbody>
+        </tbody>
+        <tbody class="team-1">
+          <tr><th>Team 1</th><th class="score"></th></tr></tbody>
+        </tbody>
+        <tbody class="spectators">
+          <tr><th colspan="2">Spectators</th></tr></tbody>
+        </tbody>
+      </table>
+    </div>
+    <header>Chat log</header>
+    <div class="log">
+    </div>
+    <div class="input">
+      <textarea placeholder="Type here to chat" maxlength="300" disabled></textarea>
+    </div>
+  </div>
+  <script src="index.js"></script>
+</body>
+</html>

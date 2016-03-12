@@ -1,0 +1,84 @@
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; font-family: sans-serif; }
+
+body {
+  display: flex;
+  font-size: 0.8em;
+}
+
+.main {
+  flex: 1 1 0;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+}
+
+.main .status {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1em;
+  text-align: center;
+  font-size: 2em;
+  color: #eee;
+}
+
+.sidebar {
+  width: 300px;
+  display: flex;
+  flex-flow: column;
+}
+
+.sidebar .players {
+  height: 300px;
+  overflow-y: scroll;
+}
+
+.sidebar .players table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.sidebar .players td, .sidebar .players th {
+  padding: 0.5em;
+  border: 1px solid;
+  text-align: left;
+}
+
+.sidebar .log {
+  flex: 1 1 0;
+  overflow-y: scroll;
+  padding: 0.5em;
+}
+
+.sidebar .log > div {
+  padding: 0.25em;
+  white-space: pre-wrap;
+}
+
+.sidebar .log .author {
+  font-weight: bold;
+}
+
+.sidebar header {
+  text-transform: uppercase;
+  padding: 0.5em;
+  background: #80deea;
+  font-weight: bold;
+}
+
+.sidebar .input {
+  height: 100px;
+  display: flex;
+}
+
+.sidebar .input textarea {
+  flex: 1 1 0;
+  resize: none;
+  border: none;
+  border-top: 1px solid #ccc;
+  padding: 0.5em;
+  font: inherit;
+}
