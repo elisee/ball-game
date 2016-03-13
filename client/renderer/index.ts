@@ -85,7 +85,8 @@ export function throwBall(ball: Game.BallPub) {
 }
 
 export function score(teamIndex: number) {
-  (courtModel.blueBasket.material as any).color.setRGB(3, 3, 3);
+  if (teamIndex === 0) (courtModel.blueBasket.material as any).color.setRGB(3, 3, 3);
+  else (courtModel.redBasket.material as any).color.setRGB(3, 3, 3);
 }
 
 const tmpEuler = new THREE.Euler();
