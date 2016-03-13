@@ -20,6 +20,7 @@ export function append(author: string, text: string) {
   div.appendChild(textSpan);
 
   chatLog.appendChild(div);
+  chatLog.scrollTop = 9e9;
 }
 
 chatInput.addEventListener("keydown", onKeyDown);
