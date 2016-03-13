@@ -5,8 +5,9 @@ let rightStickAngle: number = null;
 let rightTrigger = 0;
 let jumpPressed = false;
 
-let throwOrCatchPressed = false;
-let hasJustPressedThrowOrCatch = false;
+let wasLeftTriggerDown = false;
+let isLeftTriggerDown = false;
+export let hasJustPressedLeftTrigger = false;
 
 export let prediction: Game.PlayerInput;
 
@@ -30,19 +31,20 @@ export function gather() {
     rightStickAngle = null;
   }
 
-  rightTrigger = gamepad.buttons[7].value;
+  rightTrigger = gamepad.buttons[7].value > 0.1 ? gamepad.buttons[7].value : 0;
   jumpPressed = gamepad.buttons[0].pressed;
 
   // Left trigger
-  if (!throwOrCatchPressed && gamepad.buttons[6].pressed) hasJustPressedThrowOrCatch = true;
-  throwOrCatchPressed = gamepad.buttons[6].pressed;
+  wasLeftTriggerDown = isLeftTriggerDown;
+  isLeftTriggerDown = gamepad.buttons[6].pressed;
+  hasJustPressedLeftTrigger = !wasLeftTriggerDown && isLeftTriggerDown;
 }
 
 export function initPrediction(avatar: Game.AvatarPub) {
   prediction = {
     x: avatar.x,
     z: avatar.z,
-    jump: false,
+    jumping: false,
     angleY: avatar.angleY,
     angleX: avatar.angleX
   };
@@ -52,8 +54,8 @@ function clamp(v: number, min: number, max: number) {
   return Math.min(Math.max(v, min), max);
 }
 
-export function predict(canMove: boolean, hasJustThrown: boolean) {
-  if (canMove && leftStickAngle != null) {
+export function predict(matchStarted: boolean, hasBall: boolean, throwCooldown: boolean) {
+  if (matchStarted && !hasBall && leftStickAngle != null) {
     prediction.x = clamp(prediction.x + Math.cos(leftStickAngle) * 0.1, -shared.court.width / 2, shared.court.width / 2);
     prediction.z = clamp(prediction.z + Math.sin(leftStickAngle) * 0.1, -shared.court.depth / 2, shared.court.depth / 2);
   }
@@ -64,10 +66,6 @@ export function predict(canMove: boolean, hasJustThrown: boolean) {
 
   prediction.angleX = Math.PI / 4 * rightTrigger;
 
-  prediction.jump = jumpPressed;
-
-  prediction.throw = hasJustPressedThrowOrCatch ? true : undefined;
-  hasJustPressedThrowOrCatch = false;
-
-  prediction.catch = (throwOrCatchPressed && !hasJustThrown) ? true : undefined;
+  prediction.jumping = jumpPressed;
+  prediction.catching = (isLeftTriggerDown || rightTrigger > 0) && !hasBall && !throwCooldown ? true : undefined;
 }

@@ -106,6 +106,7 @@ function onTick(data: Game.TickData) {
     avatar.jump = move.jump;
     avatar.angleY = move.angleY;
     avatar.angleX = move.angleX;
+    avatar.catching = move.catching;
   }
 
   if (pub.match != null) {
@@ -128,9 +129,9 @@ function onCatchBall(playerId: string) {
 }
 
 function onThrowBall(ball: Game.BallPub) {
-  const thrownByMe = pub.ball.playerId === myPlayerId;
+if (pub.ball.playerId === myPlayerId) renderer.ballThrownTimer = 20;
   pub.ball = ball;
-  renderer.throwBall(pub.ball, thrownByMe);
+  renderer.throwBall(pub.ball);
 }
 
 function onEndMatch() {

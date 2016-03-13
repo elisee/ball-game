@@ -24,6 +24,7 @@ export default class Player {
     socket.on("setName", this.onSetName);
     socket.on("joinTeam", this.onJoinTeam);
     socket.on("input", this.onInput);
+    socket.on("throwBall", this.onThrowBall);
     socket.on("disconnect", this.onDisconnect);
 
     socket.emit("welcome", game.pub, this.pub.id);
@@ -55,7 +56,7 @@ export default class Player {
     const x = teamIndex === 0 ? -5 : 5;
     const z = (team.players.length - 1) * 3;
     const angleY = teamIndex === 0 ? 0 : Math.PI;
-    this.pub.avatar = { teamIndex, score: 0, x, z, jump: 0, angleX: 0, angleY };
+    this.pub.avatar = { teamIndex, score: 0, x, z, jump: 0, angleX: 0, angleY, catching: false };
     team.players.push(this);
 
     // Add to active players list
@@ -82,7 +83,7 @@ export default class Player {
 
   private onInput = (input: Game.PlayerInput) => {
     const avatar = this.pub.avatar;
-    if (avatar == null) { return; }
+    if (avatar == null) return;
 
     const ball = game.pub.ball;
 
@@ -92,31 +93,17 @@ export default class Player {
       avatar.z = input.z;
     }
 
-    if (input.jump && avatar.jump === 0) {
+    if (input.jumping && avatar.jump === 0) {
       avatar.jump = shared.jumpDuration;
     }
 
     avatar.angleX = input.angleX;
     avatar.angleY = input.angleY;
 
-    const arm = shared.getArmPosition(avatar);
+    avatar.catching = ball.playerId == null && input.catching;
 
-    if (ball.playerId === this.pub.id && input.throw) {
-      ball.playerId = null;
-
-      const throwPower = 0.3;
-      ball.x = arm.x;
-      ball.y = arm.y;
-      ball.z = arm.z;
-
-      ball.vx = Math.cos(avatar.angleY) * throwPower;
-      ball.vz = Math.sin(avatar.angleY) * throwPower;
-
-      ball.vy = Math.sin(avatar.angleX) * throwPower;
-
-      ball.playerId = null;
-      io.in("game").emit("throwBall", ball);
-    } else if (ball.playerId == null && input.catch) {
+    if (avatar.catching) {
+      const arm = shared.getArmPosition(avatar);
       const dx = ball.x - arm.x;
       const dz = ball.z - arm.z;
 
@@ -127,6 +114,30 @@ export default class Player {
         io.in("game").emit("catchBall", ball.playerId);
       }
     }
+  };
+
+  private onThrowBall = () => {
+    const avatar = this.pub.avatar;
+    if (avatar == null) return;
+
+    const ball = game.pub.ball;
+    if (ball.playerId !== this.pub.id) return;
+
+    const arm = shared.getArmPosition(avatar);
+    ball.playerId = null;
+
+    const throwPower = 0.3;
+    ball.x = arm.x;
+    ball.y = arm.y;
+    ball.z = arm.z;
+
+    ball.vx = Math.cos(avatar.angleY) * throwPower;
+    ball.vz = Math.sin(avatar.angleY) * throwPower;
+
+    ball.vy = Math.sin(avatar.angleX) * throwPower;
+
+    ball.playerId = null;
+    io.in("game").emit("throwBall", ball);
   };
 
   private onDisconnect = () => {

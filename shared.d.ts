@@ -32,6 +32,7 @@ declare namespace Game {
     jump: number;
     angleX: number;
     angleY: number;
+    catching: boolean;
   }
 
   interface TeamPub {
@@ -50,17 +51,16 @@ declare namespace Game {
     jump: number;
     angleX: number;
     angleY: number;
+    catching: boolean;
   }
 
   interface PlayerInput {
     x: number;
     z: number;
-    jump: boolean;
+    jumping: boolean;
     angleX: number;
     angleY: number;
-
-    throw?: boolean;
-    catch?: boolean;
+    catching?: boolean;
   }
 
   /*interface BallMove {

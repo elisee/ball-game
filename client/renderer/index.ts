@@ -7,7 +7,7 @@ import ballModel from "./ballModel";
 import * as character from "./character";
 
 import * as input from "./input";
-import { myPlayerId, players, pub } from "../gameClient";
+import { socket, myPlayerId, players, pub } from "../gameClient";
 import * as shared from "../../shared";
 
 const modelsById: { [playerId: string]: character.Model; } = {};
@@ -69,18 +69,31 @@ export function catchBall(playerId: string) {
   modelsById[playerId].shoulders.add(ballModel);
 }
 
-let ballThrownTimer = 0;
-export function throwBall(ball: Game.BallPub, thrownByMe: boolean) {
-  if (thrownByMe) ballThrownTimer = 5;
-
+export function throwBall(ball: Game.BallPub) {
   scene.add(ballModel);
   ballModel.position.set(ball.x, ball.y, ball.z);
 }
 
 const tmpEuler = new THREE.Euler();
 
+let sceneAngleY = 0;
+
+function lerp(a: number, b: number, v: number) {
+  return a + (b - a) * v;
+}
+
+export let ballThrownTimer = 0;
 function animate() {
   animationId = requestAnimationFrame(animate);
+
+  if (pub != null && pub.match == null) {
+    sceneAngleY += Math.PI / 640;
+  } else {
+    if (Math.abs(sceneAngleY) > 0.1) sceneAngleY = lerp(sceneAngleY, 0, 0.15);
+    else sceneAngleY = 0;
+  }
+  if (sceneAngleY > Math.PI) sceneAngleY -= Math.PI * 2;
+  scene.setRotationFromEuler(tmpEuler.set(0, sceneAngleY, 0));
 
   let width = canvas.parentElement.clientWidth;
   let height = canvas.parentElement.clientHeight;
@@ -96,23 +109,25 @@ function animate() {
   threeRenderer.render(scene, camera);
 
   input.gather();
+  if (input.hasJustPressedLeftTrigger) { socket.emit("throwBall"); }
 
   for (const playerId in modelsById) {
     const model = modelsById[playerId];
     const { avatar } = players.byId[playerId];
+    const hasBall = pub.ball.playerId === playerId;
 
     if (playerId === myPlayerId) {
       // TODO: Use proper ticking mechanism
-      input.predict(pub.match != null && pub.ball.playerId !== myPlayerId, ballThrownTimer > 0);
+      input.predict(pub.match != null, pub.ball.playerId === myPlayerId, ballThrownTimer > 0);
 
       model.root.position.set(input.prediction.x, 0, input.prediction.z);
       model.root.setRotationFromEuler(tmpEuler.set(0, -input.prediction.angleY, 0));
-      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, input.prediction.angleX));
+      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, input.prediction.catching || hasBall ? input.prediction.angleX : -Math.PI / 2));
     } else {
       // TODO: Lerp between previous and current!
       model.root.position.set(avatar.x, 0, avatar.z);
       model.root.setRotationFromEuler(tmpEuler.set(0, -avatar.angleY, 0));
-      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, avatar.angleX));
+      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, avatar.catching || hasBall ? avatar.angleX : -Math.PI / 2));
     }
   }
 

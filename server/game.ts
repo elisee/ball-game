@@ -53,7 +53,8 @@ function tick() {
       z: avatar.z,
       jump: avatar.jump,
       angleY: avatar.angleY,
-      angleX: avatar.angleX
+      angleX: avatar.angleX,
+      catching: avatar.catching
     };
   }
 

@@ -20,7 +20,7 @@ export const ballPhysics = {
   catchRadius: 0.5,
 
   drag: 0.98,
-  bounce: 0.8
+  bounce: 0.6
 };
 
 export function getArmPosition(avatar: Game.AvatarPub) {
@@ -67,12 +67,18 @@ export function tickBall(ball: Game.BallPub) {
   ball.vx *= ballPhysics.drag;
   ball.vz *= ballPhysics.drag;
 
-  ball.y += ball.vy;
-  ball.vy -= gravity;
+  if (ball.y !== ballPhysics.radius || ball.vy !== 0) {
+    ball.y += ball.vy;
+    ball.vy -= gravity;
 
-  ball.y -= gravity;
-  if (ball.y < ballPhysics.radius) {
-    ball.y = ballPhysics.radius + (ballPhysics.radius - ball.y) * ballPhysics.bounce;
-    ball.vy = -ball.vy * ballPhysics.bounce;
+    if (ball.y < ballPhysics.radius) {
+      if (ball.vy > -0.05) {
+        ball.y = ballPhysics.radius;
+        ball.vy = 0;
+      } else {
+        ball.y = ballPhysics.radius + (ballPhysics.radius - ball.y) * ballPhysics.bounce;
+        ball.vy = -ball.vy * ballPhysics.bounce;
+      }
+    }
   }
 }
