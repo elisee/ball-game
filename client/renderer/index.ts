@@ -7,9 +7,9 @@ import ball from "./ball";
 import * as character from "./character";
 
 import * as input from "./input";
-import { myPlayerId } from "../gameClient";
+import { myPlayerId, players } from "../gameClient";
 
-const playersById: { [playerId: string]: character.Model; } = {};
+const modelsById: { [playerId: string]: character.Model; } = {};
 
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 
@@ -35,7 +35,7 @@ export function stop() {
 export function addPlayer(player: Game.PlayerPub) {
   const model = character.make(player.avatar);
   court.root.add(model.root);
-  playersById[player.id] = model;
+  modelsById[player.id] = model;
 
   if (player.id === myPlayerId) {
     input.initPrediction(player.avatar);
@@ -43,11 +43,19 @@ export function addPlayer(player: Game.PlayerPub) {
 }
 
 export function removePlayer(playerId: string) {
-  const model = playersById[playerId];
+  const model = modelsById[playerId];
   model.root.parent.remove(model.root);
 
-  delete playersById[playerId];
+  delete modelsById[playerId];
 }
+
+export function reset() {
+  for (const playerId in modelsById) removePlayer(playerId);
+
+  // TODO: Reset ball
+}
+
+const tmpEuler = new THREE.Euler();
 
 function animate() {
   animationId = requestAnimationFrame(animate);
@@ -65,14 +73,23 @@ function animate() {
   threeRenderer.setSize(canvas.width, canvas.height, false);
   threeRenderer.render(scene, camera);
 
-  const myModel = playersById[myPlayerId];
-  if (myModel != null) {
-    input.gather();
+  input.gather();
 
-    // TODO: Use proper ticking mechanism
-    input.predict();
+  for (const playerId in modelsById) {
+    const model = modelsById[playerId];
+    const { avatar } = players.byId[playerId];
 
-    myModel.root.position.set(input.predicted.x, 0, input.predicted.z);
-    myModel.root.setRotationFromEuler(new THREE.Euler(0, -input.predicted.angleY, 0));
+    if (playerId === myPlayerId) {
+      // TODO: Use proper ticking mechanism
+      input.predict();
+      model.root.position.set(input.predictedMove.x, 0, input.predictedMove.z);
+      model.root.setRotationFromEuler(tmpEuler.set(0, -input.predictedMove.angleY, 0));
+      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, input.predictedMove.angleX));
+    } else {
+      // TODO: Lerp between previous and current!
+      model.root.position.set(avatar.x, 0, avatar.z);
+      model.root.setRotationFromEuler(tmpEuler.set(0, -avatar.angleY, 0));
+      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, avatar.angleX));
+    }
   }
 }

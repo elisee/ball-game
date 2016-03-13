@@ -71,7 +71,7 @@ export function clearTeams() {
     const teamList = teamLists[teamIndex];
 
     for (let i = 1; i < teamList.childElementCount; i++) {
-      const row = playersList.children[i];
+      const row = teamList.children[i];
       row.parentElement.removeChild(row);
       row.removeChild(row.querySelector("td.score"));
       spectactorsList.appendChild(row);

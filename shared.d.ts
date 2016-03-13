@@ -30,4 +30,17 @@ declare namespace Game {
   interface MatchPub {
     ticksLeft: number;
   }
+
+  interface PlayerMove {
+    x: number;
+    z: number;
+    jump: number;
+    angleX: number;
+    angleY: number;
+    // shoot?: boolean;
+  }
+
+  interface TickData {
+    playerMoves: { [playerId: string]: PlayerMove; };
+  }
 }

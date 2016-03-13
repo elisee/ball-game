@@ -18,6 +18,7 @@ const teamMaterials = [
 export function make(avatar: Game.AvatarPub): Model {
   const root = new THREE.Group();
   root.rotateY(avatar.angleY);
+  root.position.x = avatar.x;
   root.position.z = avatar.z;
 
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.5), teamMaterials[avatar.teamIndex]);
@@ -34,6 +35,7 @@ export function make(avatar: Game.AvatarPub): Model {
 
   const shoulders = new THREE.Group();
   shoulders.position.y = 0.2;
+  shoulders.rotateX(avatar.angleX);
   body.add(shoulders);
 
   const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.2), skinMaterial);
@@ -41,7 +43,6 @@ export function make(avatar: Game.AvatarPub): Model {
   leftArm.receiveShadow = true;
   leftArm.position.x = 0.3;
   leftArm.position.z = 0.3;
-  leftArm.rotateX(avatar.angleX);
   shoulders.add(leftArm);
 
   const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.2), skinMaterial);
@@ -49,7 +50,6 @@ export function make(avatar: Game.AvatarPub): Model {
   rightArm.receiveShadow = true;
   rightArm.position.x = 0.3;
   rightArm.position.z = -0.3;
-  rightArm.rotateX(avatar.angleX);
   shoulders.add(rightArm);
 
   const pelvis = new THREE.Group();
@@ -61,7 +61,6 @@ export function make(avatar: Game.AvatarPub): Model {
   leftLeg.receiveShadow = true;
   leftLeg.position.y = -0.3;
   leftLeg.position.z = 0.1;
-  leftLeg.rotateX(avatar.angleX);
   pelvis.add(leftLeg);
 
   const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.6, 0.2), skinMaterial);
@@ -69,7 +68,6 @@ export function make(avatar: Game.AvatarPub): Model {
   rightLeg.receiveShadow = true;
   rightLeg.position.y = -0.3;
   rightLeg.position.z = -0.1;
-  rightLeg.rotateX(avatar.angleX);
   pelvis.add(rightLeg);
 
   return { root, head, shoulders };

@@ -1,5 +1,6 @@
 import { io } from "./index";
 import * as game from "./game";
+import * as match from "./match";
 import * as shared from "../shared";
 
 export default class Player {
@@ -17,6 +18,7 @@ export default class Player {
     socket.on("chat", this.onChat);
     socket.on("setName", this.onSetName);
     socket.on("joinTeam", this.onJoinTeam);
+    socket.on("input", this.onInput);
     socket.on("disconnect", this.onDisconnect);
 
     socket.emit("welcome", game.pub, this.pub.id);
@@ -59,7 +61,27 @@ export default class Player {
 
     // Let everyone know
     io.in("game").emit("joinTeam", this.socket.id, this.pub.avatar);
+
+    // Launch match
+    if (game.pub.match == null && game.players.active.length === shared.maxPlayersPerTeam * 2) {
+      match.start();
+    }
+
     callback(null);
+  };
+
+  private onInput = (move: Game.PlayerMove) => {
+    const avatar = this.pub.avatar;
+    if (avatar == null) { return; }
+
+    if (game.pub.match != null) {
+      avatar.x = move.x;
+      avatar.z = move.z;
+    }
+
+    avatar.jump = move.jump;
+    avatar.angleX = move.angleX;
+    avatar.angleY = move.angleY;
   };
 
   private onDisconnect = () => {
@@ -75,5 +97,9 @@ export default class Player {
     game.players.all.splice(game.players.all.indexOf(this), 1);
 
     io.in("game").emit("removePlayer", this.socket.id);
+
+    if (game.pub.match != null && game.players.active.length === 1) {
+      match.end();
+    }
   };
 }

@@ -1,16 +1,10 @@
-let leftStickAngle: number;
-let rightStickAngle: number;
-let rightTrigger: number;
-let jumpPressed: boolean;
-let shootPressed: boolean;
+let leftStickAngle: number = null;
+let rightStickAngle: number = null;
+let rightTrigger = 0;
+let jumpPressed = false;
+let shootPressed = false;
 
-export let predicted: {
-  x: number;
-  z: number;
-  jump: number;
-  angleY: number;
-  angleX: number;
-};
+export let predictedMove: Game.PlayerMove;
 
 export function gather() {
   const gamepad = navigator.getGamepads()[0];
@@ -38,7 +32,7 @@ export function gather() {
 }
 
 export function initPrediction(avatar: Game.AvatarPub) {
-  predicted = {
+  predictedMove = {
     x: avatar.x,
     z: avatar.z,
     jump: avatar.jump,
@@ -49,13 +43,13 @@ export function initPrediction(avatar: Game.AvatarPub) {
 
 export function predict() {
   if (leftStickAngle != null) {
-    predicted.x += Math.cos(leftStickAngle) * 0.1;
-    predicted.z += Math.sin(leftStickAngle) * 0.1;
+    predictedMove.x += Math.cos(leftStickAngle) * 0.1;
+    predictedMove.z += Math.sin(leftStickAngle) * 0.1;
   }
 
   if (rightStickAngle != null) {
-    predicted.angleY = rightStickAngle;
+    predictedMove.angleY = rightStickAngle;
   }
 
-  predicted.angleX = Math.PI / 4 * rightTrigger;
+  predictedMove.angleX = Math.PI / 4 * rightTrigger;
 }

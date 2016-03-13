@@ -2,12 +2,13 @@ import * as io from "socket.io-client";
 import * as renderer from "./renderer";
 import * as sidebar from "./sidebar";
 import * as status from "./status";
+import * as input from "./renderer/input";
 
 let pub: Game.GamePub;
-let players: { byId: { [id: string]: Game.PlayerPub } };
+export let players: { byId: { [id: string]: Game.PlayerPub; } };
+export let myPlayerId: string;
 
 export let socket: SocketIOClient.Socket;
-export let myPlayerId: string;
 
 export function connect() {
   socket = io.connect({ transports: [ "websocket" ], reconnection: false });
@@ -26,6 +27,9 @@ function onWelcome(data: Game.GamePub, playerId: string) {
   socket.on("setName", onSetName);
   socket.on("joinTeam", onJoinTeam);
   socket.on("tick", onTick);
+
+  socket.on("startMatch", onStartMatch);
+  socket.on("endMatch", onEndMatch);
 
   if (pub.match != null) {
     status.setTimer(pub.match.ticksLeft);
@@ -84,13 +88,43 @@ function onJoinTeam(playerId: string, avatar: Game.AvatarPub) {
   renderer.addPlayer(player);
 }
 
-function onTick(data: any) {
-  // NOTHING
+function onTick(data: Game.TickData) {
+  if (players.byId[myPlayerId].avatar != null) {
+    socket.emit("input", input.predictedMove);
+  }
+
+  for (const playerId in data.playerMoves) {
+    const move = data.playerMoves[playerId];
+    const avatar = players.byId[playerId].avatar;
+    avatar.x = move.x;
+    avatar.z = move.z;
+    avatar.jump = move.jump;
+    avatar.angleY = move.angleY;
+    avatar.angleX = move.angleX;
+  }
+
+  if (pub.match != null) {
+    pub.match.ticksLeft--;
+    status.setTimer(pub.match.ticksLeft);
+  }
 }
 
-function onMatchEnd() {
+function onStartMatch(match: Game.MatchPub) {
+  pub.match = match;
+}
+
+function onEndMatch() {
+  for (const playerId in players.byId) {
+    const player = players.byId[playerId];
+    player.avatar = null;
+  }
+
+  renderer.reset();
+  pub.match = null;
   sidebar.players.clearTeams();
   status.setText("Game over!");
+
+  sidebar.me.setupTeam(null, false);
 }
 
 function onDisconnect() {
