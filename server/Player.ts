@@ -69,7 +69,7 @@ export default class Player {
     io.in("game").emit("joinTeam", this.pub.id, this.pub.avatar);
 
     // Launch match
-    if (game.pub.match == null && game.players.active.length === shared.maxPlayersPerTeam * 2) {
+    if (game.pub.match == null && game.players.active.length === /* shared.maxPlayersPerTeam * 2 */ 1) {
       match.start();
     }
 
@@ -102,7 +102,7 @@ export default class Player {
 
     avatar.catching = ball.playerId == null && input.catching;
 
-    if (game.pub.match.scoreTimer === 0 && avatar.catching) {
+    if (game.pub.match != null && game.pub.match.scoreTimer === 0 && avatar.catching) {
       const arm = shared.getArmPosition(avatar);
       const dx = ball.x - arm.x;
       const dz = ball.z - arm.z;
