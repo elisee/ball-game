@@ -1,5 +1,5 @@
 import * as io from "socket.io-client";
-import * as matchRenderer from "./matchRenderer";
+import * as renderer from "./renderer";
 import * as sidebar from "./sidebar";
 import * as status from "./status";
 
@@ -35,7 +35,7 @@ function onWelcome(data: Game.GamePub, playerId: string) {
 
   for (const player of pub.players) {
     players.byId[player.id] = player;
-    matchRenderer.addPlayer(player);
+    if (player.avatar != null) renderer.addPlayer(player);
     sidebar.players.add(player);
   }
 
@@ -50,15 +50,17 @@ function onWelcome(data: Game.GamePub, playerId: string) {
 function onAddPlayer(player: Game.PlayerPub) {
   pub.players.push(player);
   players.byId[player.id] = player;
-  matchRenderer.addPlayer(player);
+
+  if (player.avatar != null) renderer.addPlayer(player);
   sidebar.players.add(player);
 }
 
 function onRemovePlayer(playerId: string) {
   sidebar.players.remove(playerId);
-  matchRenderer.removePlayer(playerId);
 
   const player = players.byId[playerId];
+  if (player.avatar != null) renderer.removePlayer(playerId);
+
   pub.players.splice(pub.players.indexOf(player), 1);
   delete players.byId[playerId];
 }
@@ -73,12 +75,13 @@ function onSetName(playerId: string, name: string) {
 }
 
 function onJoinTeam(playerId: string, avatar: Game.AvatarPub) {
-  players.byId[playerId].avatar = avatar;
+  const player = players.byId[playerId];
+  player.avatar = avatar;
 
   if (playerId === myPlayerId) sidebar.me.setupTeam(avatar.teamIndex, true);
 
   sidebar.players.setTeam(playerId, avatar.teamIndex);
-  matchRenderer.setPlayerAvatar(playerId, avatar);
+  renderer.addPlayer(player);
 }
 
 function onTick(data: any) {
@@ -91,6 +94,6 @@ function onMatchEnd() {
 }
 
 function onDisconnect() {
-  matchRenderer.stop();
+  renderer.stop();
   document.body.innerHTML = "Whoops, you have been disconnected. Plz reload the page.";
 }

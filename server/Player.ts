@@ -46,8 +46,9 @@ export default class Player {
 
     // Setup avatar and team
     const x = teamIndex === 0 ? -5 : 5;
-    const y = (team.players.length - 1) * 3;
-    this.pub.avatar = { teamIndex, score: 0, x, y, jump: 0, angleX: 0, angleY: 0 };
+    const z = (team.players.length - 1) * 3;
+    const angleY = teamIndex === 0 ? 0 : Math.PI;
+    this.pub.avatar = { teamIndex, score: 0, x, z, jump: 0, angleX: 0, angleY };
     team.players.push(this);
 
     // Add to active players list

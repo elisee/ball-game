@@ -17,7 +17,7 @@ declare namespace Game {
     teamIndex: number;
     score: number;
     x: number;
-    y: number;
+    z: number;
     jump: number;
     angleX: number;
     angleY: number;
