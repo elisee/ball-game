@@ -9,12 +9,14 @@ export const pub: Game.GamePub = {
   match: null,
   players: [],
   ball: {
-    x: 0, y: 1, z: 0,
+    x: 0, y: 0, z: 0,
     vx: 0, vy: 0, vz: 0,
     playerId: null,
   },
   teams: []
 };
+
+shared.resetBall(pub.ball);
 
 export const players: {
   byId: { [id: string]: Player; };
