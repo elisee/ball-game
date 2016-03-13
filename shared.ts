@@ -30,7 +30,7 @@ export const ballPhysics = {
 
   drag: 0.98,
   bounce: 0.6,
-  gravity: 0.01
+  gravity: 0.02
 };
 
 
