@@ -53,9 +53,19 @@ export function removePlayer(playerId: string) {
 }
 
 export function reset() {
+  resetBall();
+  resetBaskets();
+  for (const playerId in modelsById) removePlayer(playerId);
+}
+
+export function resetBall() {
   scene.add(ballModel);
   ballModel.position.set(0, 1, 0);
-  for (const playerId in modelsById) removePlayer(playerId);
+}
+
+export function resetBaskets() {
+  (courtModel.redBasket.material as any).color.setHex(0xffffff);
+  (courtModel.blueBasket.material as any).color.setHex(0xffffff);
 }
 
 export function catchBall(playerId: string) {
@@ -72,6 +82,10 @@ export function catchBall(playerId: string) {
 export function throwBall(ball: Game.BallPub) {
   scene.add(ballModel);
   ballModel.position.set(ball.x, ball.y, ball.z);
+}
+
+export function score(teamIndex: number) {
+  (courtModel.blueBasket.material as any).color.setRGB(3, 3, 3);
 }
 
 const tmpEuler = new THREE.Euler();
@@ -122,13 +136,15 @@ function animate() {
 
       model.root.position.set(input.prediction.x, 0, input.prediction.z);
       model.root.setRotationFromEuler(tmpEuler.set(0, -input.prediction.angleY, 0));
-      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, input.prediction.catching || hasBall ? input.prediction.angleX : -Math.PI / 2));
+      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, input.prediction.catching || hasBall ? input.prediction.angleX : -Math.PI * 0.4));
     } else {
       // TODO: Lerp between previous and current!
       model.root.position.set(avatar.x, 0, avatar.z);
       model.root.setRotationFromEuler(tmpEuler.set(0, -avatar.angleY, 0));
-      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, avatar.catching || hasBall ? avatar.angleX : -Math.PI / 2));
+      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, avatar.catching || hasBall ? avatar.angleX : -Math.PI * 0.4));
     }
+
+    model.root.position.y = shared.getAvatarY(avatar.jump);
   }
 
   if (pub != null && pub.ball.playerId == null) {

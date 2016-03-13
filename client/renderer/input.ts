@@ -32,7 +32,7 @@ export function gather() {
   }
 
   rightTrigger = gamepad.buttons[7].value > 0.1 ? gamepad.buttons[7].value : 0;
-  jumpPressed = gamepad.buttons[0].pressed;
+  jumpPressed = gamepad.buttons[4].pressed /* LB */ || gamepad.buttons[5].pressed /* RB */;
 
   // Left trigger
   wasLeftTriggerDown = isLeftTriggerDown;

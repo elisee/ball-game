@@ -94,7 +94,7 @@ export default class Player {
     }
 
     if (input.jumping && avatar.jump === 0) {
-      avatar.jump = shared.jumpDuration;
+      avatar.jump = shared.jump.duration;
     }
 
     avatar.angleX = input.angleX;
@@ -102,7 +102,7 @@ export default class Player {
 
     avatar.catching = ball.playerId == null && input.catching;
 
-    if (avatar.catching) {
+    if (game.pub.match.scoreTimer === 0 && avatar.catching) {
       const arm = shared.getArmPosition(avatar);
       const dx = ball.x - arm.x;
       const dz = ball.z - arm.z;

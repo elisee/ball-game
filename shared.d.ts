@@ -10,6 +10,7 @@ declare namespace Game {
 
   interface MatchPub {
     ticksLeft: number;
+    scoreTimer: number;
   }
 
   interface BallPub {

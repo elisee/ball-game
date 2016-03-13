@@ -32,6 +32,7 @@ function onWelcome(data: Game.GamePub, playerId: string) {
   socket.on("startMatch", onStartMatch);
   socket.on("catchBall", onCatchBall);
   socket.on("throwBall", onThrowBall);
+  socket.on("score", onScore);
   socket.on("endMatch", onEndMatch);
 
   if (pub.match != null) {
@@ -45,6 +46,9 @@ function onWelcome(data: Game.GamePub, playerId: string) {
     if (player.avatar != null) renderer.addPlayer(player);
     sidebar.players.add(player);
   }
+  sidebar.players.updateTeamScore(0, pub.teams[0].score);
+  sidebar.players.updateTeamScore(1, pub.teams[1].score);
+
 
   const myPlayer = players.byId[myPlayerId];
   sidebar.me.setupName(myPlayer.name, false);
@@ -98,6 +102,7 @@ function sendInput() {
 }
 
 function onTick(data: Game.TickData) {
+
   for (const playerId in data.playerMoves) {
     const move = data.playerMoves[playerId];
     const avatar = players.byId[playerId].avatar;
@@ -111,7 +116,18 @@ function onTick(data: Game.TickData) {
 
   if (pub.match != null) {
     pub.match.ticksLeft--;
-    status.setTimer(pub.match.ticksLeft);
+
+    if (pub.match.scoreTimer > 0) {
+      pub.match.scoreTimer--;
+      if (pub.match.scoreTimer === 0) {
+        shared.resetBall(pub.ball);
+        renderer.resetBall();
+        renderer.resetBaskets();
+      }
+    status.setText("SCOOOORE!");
+    } else {
+      status.setTimer(pub.match.ticksLeft);
+    }
 
     if (pub.ball.playerId == null) shared.tickBall(pub.ball);
   }
@@ -121,6 +137,8 @@ function onTick(data: Game.TickData) {
 
 function onStartMatch(match: Game.MatchPub) {
   pub.match = match;
+  sidebar.players.updateTeamScore(0, 0);
+  sidebar.players.updateTeamScore(1, 0);
 }
 
 function onCatchBall(playerId: string) {
@@ -134,12 +152,18 @@ if (pub.ball.playerId === myPlayerId) renderer.ballThrownTimer = 20;
   renderer.throwBall(pub.ball);
 }
 
+function onScore(teamIndex: number) {
+  pub.match.scoreTimer = shared.resetBallDuration;
+  pub.teams[teamIndex].score += 2;
+  sidebar.players.updateTeamScore(teamIndex, pub.teams[teamIndex].score);
+  renderer.score(teamIndex);
+}
+
 function onEndMatch() {
   const ball = pub.ball;
-  ball.x = ball.z = 0;
-  ball.y = 1;
-  ball.vx = ball.vy = ball.vz = 0;
-  ball.playerId = null;
+  shared.resetBall(ball);
+  renderer.resetBall();
+  renderer.resetBaskets();
 
   for (const playerId in players.byId) {
     const player = players.byId[playerId];

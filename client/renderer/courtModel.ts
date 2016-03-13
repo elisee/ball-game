@@ -3,19 +3,24 @@ import * as shared from "../../shared";
 
 export const root = new THREE.Group();
 
-const floorImage = new Image();
-floorImage.src = "floor.png";
-floorImage.addEventListener("load", () => { floorTexture.needsUpdate = true; });
-const floorTexture = new THREE.Texture(floorImage, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
+function loadTexture(path: string, repeat: boolean) {
+  const image = new Image();
+  image.src = path;
+  image.addEventListener("load", () => { texture.needsUpdate = true; });
+  const texture = new THREE.Texture(image, null, repeat ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping, repeat ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
+  return texture;
+}
 
-const wallImage = new Image();
-wallImage.src = "wall.png";
-wallImage.addEventListener("load", () => { wallTexture.needsUpdate = true; });
-const wallTexture = new THREE.Texture(wallImage, null, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter);
+const floorTexture = loadTexture("floor.png", false);
+const wallTexture = loadTexture("wall.png", true);
+const redBasketTexture = loadTexture("red-basket.png", true);
+const blueBasketTexture = loadTexture("blue-basket.png", true);
 
 const floorMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: floorTexture });
 const wallMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: wallTexture });
-const cageMaterial = new (THREE as any).MeshStandardMaterial({ color: 0x202020, roughness: 0.8, metalness: 0.2 });
+
+const redBasketMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.2, map: redBasketTexture });
+const blueBasketMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.2, map: blueBasketTexture });
 
 const ambientLight = new THREE.AmbientLight(0xcccccc);
 root.add(ambientLight);
@@ -45,7 +50,10 @@ floor.receiveShadow = true;
 floor.rotateX(-Math.PI / 2);
 root.add(floor);
 
-const backWall = new THREE.Mesh(new THREE.PlaneBufferGeometry(14, 5), wallMaterial);
+const largerWallGeometry = new THREE.PlaneBufferGeometry(shared.court.width + shared.court.border * 2, 5);
+const smallerWallGeometry = new THREE.PlaneBufferGeometry(shared.court.depth + shared.court.border * 2, 5);
+
+const backWall = new THREE.Mesh(largerWallGeometry, wallMaterial);
 (backWall.geometry as THREE.BufferGeometry).getAttribute("uv").setX(1, 2.8);
 (backWall.geometry as THREE.BufferGeometry).getAttribute("uv").setX(3, 2.8);
 backWall.receiveShadow = true;
@@ -53,7 +61,7 @@ backWall.position.y = 2.5;
 backWall.position.z = -5;
 root.add(backWall);
 
-const frontWall = new THREE.Mesh(new THREE.PlaneBufferGeometry(14, 5), wallMaterial);
+const frontWall = new THREE.Mesh(largerWallGeometry, wallMaterial);
 (frontWall.geometry as THREE.BufferGeometry).getAttribute("uv").setX(1, 2.8);
 (frontWall.geometry as THREE.BufferGeometry).getAttribute("uv").setX(3, 2.8);
 frontWall.receiveShadow = true;
@@ -62,30 +70,32 @@ frontWall.position.y = 2.5;
 frontWall.position.z = 5;
 root.add(frontWall);
 
-const leftWall = new THREE.Mesh(new THREE.PlaneBufferGeometry(10, 5), wallMaterial);
+const leftWall = new THREE.Mesh(smallerWallGeometry, wallMaterial);
 leftWall.receiveShadow = true;
 leftWall.rotateY(Math.PI / 2);
 leftWall.position.y = 2.5;
 leftWall.position.x = -7;
 root.add(leftWall);
 
-const rightWall = new THREE.Mesh(new THREE.PlaneBufferGeometry(10, 5), wallMaterial);
+const rightWall = new THREE.Mesh(smallerWallGeometry, wallMaterial);
 rightWall.receiveShadow = true;
 rightWall.rotateY(-Math.PI / 2);
 rightWall.position.y = 2.5;
 rightWall.position.x = 7;
 root.add(rightWall);
 
-const leftBasket = new THREE.Mesh(new THREE.PlaneBufferGeometry(3, 1.5), cageMaterial);
-leftBasket.receiveShadow = true;
-leftBasket.rotateY(Math.PI / 2);
-leftBasket.position.y = 2;
-leftBasket.position.x = -6.99;
-root.add(leftBasket);
+const basketGeometry = new THREE.PlaneBufferGeometry(shared.basket.width, shared.basket.height);
 
-const rightBasket = new THREE.Mesh(new THREE.PlaneBufferGeometry(3, 1.5), cageMaterial);
-rightBasket.receiveShadow = true;
-rightBasket.rotateY(-Math.PI / 2);
-rightBasket.position.y = 2;
-rightBasket.position.x = 6.99;
-root.add(rightBasket);
+export const redBasket = new THREE.Mesh(basketGeometry, redBasketMaterial);
+redBasket.receiveShadow = true;
+redBasket.rotateY(Math.PI / 2);
+redBasket.position.y = shared.basket.y;
+redBasket.position.x = -6.99;
+root.add(redBasket);
+
+export const blueBasket = new THREE.Mesh(basketGeometry, blueBasketMaterial);
+blueBasket.receiveShadow = true;
+blueBasket.rotateY(-Math.PI / 2);
+blueBasket.position.y = shared.basket.y;
+blueBasket.position.x = 6.99;
+root.add(blueBasket);

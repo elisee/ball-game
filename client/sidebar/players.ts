@@ -61,6 +61,10 @@ export function setTeam(playerId: string, teamIndex: number) {
   }
 }
 
+export function updateTeamScore(teamIndex: number, score: number) {
+  teamLists[teamIndex].querySelector(".score").textContent = score.toString();
+}
+
 export function remove(playerId: string) {
   const row = playersList.querySelector(`tr[data-player-id="${playerId}"]`) as HTMLTableRowElement;
   row.parentElement.removeChild(row);

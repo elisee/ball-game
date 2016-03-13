@@ -36,17 +36,12 @@ export function addPlayer(socket: SocketIO.Socket) {
 let tickIntervalId = setInterval(tick, shared.tickInterval);
 
 function tick() {
+  if (pub.match != null) match.tick();
+
   const playerMoves: { [playerId: string]: Game.PlayerMove; } = {};
-
-  // let ballMove: Game.BallMove;
-  if (pub.match != null && pub.ball.playerId == null) shared.tickBall(pub.ball);
-
-    /*ballMove = {
-      x: pub.ball.x, y: pub.ball.y, z: pub.ball.z,
-      vx: pub.ball.vx, vy: pub.ball.vy, vz: pub.ball.vz
-    };*/
-
   for (const player of players.active) {
+    player.tick();
+
     const avatar = player.pub.avatar;
     playerMoves[player.pub.id] = {
       x: avatar.x,
@@ -58,8 +53,8 @@ function tick() {
     };
   }
 
-  const data: Game.TickData = { playerMoves/*, ballMove*/ };
+  const data: Game.TickData = { playerMoves };
   io.in("game").emit("tick", data);
 
-  if (pub.match != null) match.tick();
+  if (pub.match != null && pub.match.ticksLeft === 0) match.end();
 }
