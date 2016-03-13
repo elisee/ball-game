@@ -64,7 +64,7 @@ export function predict(matchStarted: boolean, hasBall: boolean, throwCooldown: 
     prediction.angleY = rightStickAngle;
   }
 
-  prediction.angleX = Math.PI / 4 * rightTrigger;
+  prediction.angleX = Math.PI / 3 * rightTrigger;
 
   prediction.jumping = jumpPressed;
   prediction.catching = (isLeftTriggerDown || rightTrigger > 0) && !hasBall && !throwCooldown ? true : undefined;

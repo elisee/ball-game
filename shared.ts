@@ -14,7 +14,7 @@ export const resetBallDuration = 60;
 
 export const jump = {
   duration: 15,
-  boost: 0.3,
+  boost: 0.4,
   gravity: 0.05
 };
 
@@ -100,7 +100,7 @@ export function tickBall(ball: Game.BallPub) {
     ball.vy -= ballPhysics.gravity;
 
     if (ball.y < ballPhysics.radius) {
-      if (ball.vy > -0.05) {
+      if (ball.vy > -0.15) {
         ball.y = ballPhysics.radius;
         ball.vy = 0;
       } else {
