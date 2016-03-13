@@ -7,15 +7,15 @@ export interface Model {
   shoulders: THREE.Group;
 }
 
-const headMaterial = new THREE.MeshStandardMaterial({ color: 0xff8888, roughness: 0.8, metalness: 0.3 });
-const skinMaterial = new THREE.MeshStandardMaterial({ color: 0xcc8888, roughness: 0.8, metalness: 0.3 });
+const headMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xff8888, roughness: 0.8, metalness: 0.3 });
+const skinMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xcc8888, roughness: 0.8, metalness: 0.3 });
 
 const teamMaterials = [
-  new THREE.MeshStandardMaterial({ color: 0xff4444, roughness: 0.8, metalness: 0.3 }),
-  new THREE.MeshStandardMaterial({ color: 0x4444ff, roughness: 0.8, metalness: 0.3 }),
+  new (THREE as any).MeshStandardMaterial({ color: 0xff4444, roughness: 0.8, metalness: 0.3 }),
+  new (THREE as any).MeshStandardMaterial({ color: 0x4444ff, roughness: 0.8, metalness: 0.3 }),
 ];
 
-export function make(avatar: Game.AvatarPub): Model {
+export function makeModel(avatar: Game.AvatarPub): Model {
   const root = new THREE.Group();
   root.rotateY(avatar.angleY);
   root.position.x = avatar.x;
@@ -34,10 +34,12 @@ export function make(avatar: Game.AvatarPub): Model {
   body.add(head);
 
   const shoulders = new THREE.Group();
+  // NOTE: Global Y must match up with shared.shoulderHeight
   shoulders.position.y = 0.2;
   shoulders.rotateX(avatar.angleX);
   body.add(shoulders);
 
+  // NOTE: Arm length must match up with shared.armLength
   const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.2), skinMaterial);
   leftArm.castShadow = true;
   leftArm.receiveShadow = true;

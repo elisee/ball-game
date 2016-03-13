@@ -15,6 +15,12 @@ export function tick() {
 export function end() {
   game.pub.match = null;
 
+  const ball = game.pub.ball;
+  ball.x = ball.z = 0;
+  ball.y = 1;
+  ball.vx = ball.vy = ball.vz = 0;
+  ball.playerId = null;
+
   for (const player of game.players.active) {
     player.pub.avatar = null;
   }

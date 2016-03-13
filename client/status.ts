@@ -5,5 +5,11 @@ export function setText(text: string) {
 }
 
 export function setTimer(timer: number) {
-  status.textContent = timer.toString();
+  const totalSeconds = Math.floor(timer / 20);
+
+  let seconds = (totalSeconds % 60).toString();
+  if (seconds.length === 1) seconds = `0${seconds}`;
+  const minutes = Math.floor(totalSeconds / 60).toString();
+
+  status.textContent = `${minutes}:${seconds}`;
 }

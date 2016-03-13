@@ -1,10 +1,14 @@
+import * as shared from "../../shared";
+
 let leftStickAngle: number = null;
 let rightStickAngle: number = null;
 let rightTrigger = 0;
 let jumpPressed = false;
-let shootPressed = false;
 
-export let predictedMove: Game.PlayerMove;
+let throwOrCatchPressed = false;
+let hasJustPressedThrowOrCatch = false;
+
+export let prediction: Game.PlayerInput;
 
 export function gather() {
   const gamepad = navigator.getGamepads()[0];
@@ -28,28 +32,42 @@ export function gather() {
 
   rightTrigger = gamepad.buttons[7].value;
   jumpPressed = gamepad.buttons[0].pressed;
-  shootPressed = gamepad.buttons[4].pressed;
+
+  // Left trigger
+  if (!throwOrCatchPressed && gamepad.buttons[6].pressed) hasJustPressedThrowOrCatch = true;
+  throwOrCatchPressed = gamepad.buttons[6].pressed;
 }
 
 export function initPrediction(avatar: Game.AvatarPub) {
-  predictedMove = {
+  prediction = {
     x: avatar.x,
     z: avatar.z,
-    jump: avatar.jump,
+    jump: false,
     angleY: avatar.angleY,
     angleX: avatar.angleX
   };
 }
 
-export function predict() {
-  if (leftStickAngle != null) {
-    predictedMove.x += Math.cos(leftStickAngle) * 0.1;
-    predictedMove.z += Math.sin(leftStickAngle) * 0.1;
+function clamp(v: number, min: number, max: number) {
+  return Math.min(Math.max(v, min), max);
+}
+
+export function predict(canMove: boolean, hasJustThrown: boolean) {
+  if (canMove && leftStickAngle != null) {
+    prediction.x = clamp(prediction.x + Math.cos(leftStickAngle) * 0.1, -shared.court.width / 2, shared.court.width / 2);
+    prediction.z = clamp(prediction.z + Math.sin(leftStickAngle) * 0.1, -shared.court.depth / 2, shared.court.depth / 2);
   }
 
   if (rightStickAngle != null) {
-    predictedMove.angleY = rightStickAngle;
+    prediction.angleY = rightStickAngle;
   }
 
-  predictedMove.angleX = Math.PI / 4 * rightTrigger;
+  prediction.angleX = Math.PI / 4 * rightTrigger;
+
+  prediction.jump = jumpPressed;
+
+  prediction.throw = hasJustPressedThrowOrCatch ? true : undefined;
+  hasJustPressedThrowOrCatch = false;
+
+  prediction.catch = (throwOrCatchPressed && !hasJustThrown) ? true : undefined;
 }

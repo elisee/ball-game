@@ -3,11 +3,16 @@ import * as game from "./game";
 import * as match from "./match";
 import * as shared from "../shared";
 
+let nextPlayerId = 0;
+function getNextPlayerId() {
+  return (nextPlayerId++).toString();
+}
+
 export default class Player {
   pub: Game.PlayerPub;
 
   constructor(public socket: SocketIO.Socket) {
-    this.pub = { id: socket.id, name: `Guest${Math.floor(1000 + Math.random() * 9000)}`, avatar: null };
+    this.pub = { id: getNextPlayerId(), name: `Guest${Math.floor(1000 + Math.random() * 9000)}`, avatar: null };
     game.pub.players.push(this.pub);
     game.players.byId[this.pub.id] = this;
     game.players.all.push(this);
@@ -27,13 +32,13 @@ export default class Player {
   private onChat = (text: string, callback: Game.ErrorCallback) => {
     if (typeof text !== "string" || text.length < 1 || text.length > 300) { callback("Invalid chat message."); return; }
 
-    io.in("game").emit("chat", this.socket.id, text);
+    io.in("game").emit("chat", this.pub.id, text);
   };
 
   private onSetName = (name: string, callback: Game.ErrorCallback) => {
     if (typeof name !== "string" || name.length < 1 || name.length > 20) { callback("Invalid name."); return; }
 
-    io.in("game").emit("setName", this.socket.id, name);
+    io.in("game").emit("setName", this.pub.id, name);
     this.pub.name = name;
     callback(null);
   };
@@ -60,7 +65,7 @@ export default class Player {
     this.socket.join(`game:team:${teamIndex}`);
 
     // Let everyone know
-    io.in("game").emit("joinTeam", this.socket.id, this.pub.avatar);
+    io.in("game").emit("joinTeam", this.pub.id, this.pub.avatar);
 
     // Launch match
     if (game.pub.match == null && game.players.active.length === shared.maxPlayersPerTeam * 2) {
@@ -70,18 +75,58 @@ export default class Player {
     callback(null);
   };
 
-  private onInput = (move: Game.PlayerMove) => {
+  tick() {
+    const avatar = this.pub.avatar;
+    if (avatar.jump > 0) avatar.jump--;
+  }
+
+  private onInput = (input: Game.PlayerInput) => {
     const avatar = this.pub.avatar;
     if (avatar == null) { return; }
 
-    if (game.pub.match != null) {
-      avatar.x = move.x;
-      avatar.z = move.z;
+    const ball = game.pub.ball;
+
+    if (game.pub.match != null && ball.playerId !== this.pub.id) {
+      // TODO: Validate that move is possible in timeframe
+      avatar.x = input.x;
+      avatar.z = input.z;
     }
 
-    avatar.jump = move.jump;
-    avatar.angleX = move.angleX;
-    avatar.angleY = move.angleY;
+    if (input.jump && avatar.jump === 0) {
+      avatar.jump = shared.jumpDuration;
+    }
+
+    avatar.angleX = input.angleX;
+    avatar.angleY = input.angleY;
+
+    const arm = shared.getArmPosition(avatar);
+
+    if (ball.playerId === this.pub.id && input.throw) {
+      ball.playerId = null;
+
+      const throwPower = 0.3;
+      ball.x = arm.x;
+      ball.y = arm.y;
+      ball.z = arm.z;
+
+      ball.vx = Math.cos(avatar.angleY) * throwPower;
+      ball.vz = Math.sin(avatar.angleY) * throwPower;
+
+      ball.vy = Math.sin(avatar.angleX) * throwPower;
+
+      ball.playerId = null;
+      io.in("game").emit("throwBall", ball);
+    } else if (ball.playerId == null && input.catch) {
+      const dx = ball.x - arm.x;
+      const dz = ball.z - arm.z;
+
+      const dy = (ball.y > shared.shoulderY) ? ball.y - arm.y : 0;
+
+      if (Math.sqrt(dx * dx + dz * dz + dy * dy) <= shared.ballPhysics.catchRadius) {
+        ball.playerId = this.pub.id;
+        io.in("game").emit("catchBall", ball.playerId);
+      }
+    }
   };
 
   private onDisconnect = () => {
@@ -96,9 +141,9 @@ export default class Player {
     delete game.players.byId[this.pub.id];
     game.players.all.splice(game.players.all.indexOf(this), 1);
 
-    io.in("game").emit("removePlayer", this.socket.id);
+    io.in("game").emit("removePlayer", this.pub.id);
 
-    if (game.pub.match != null && game.players.active.length === 1) {
+    if (game.pub.match != null && game.players.active.length <= 1) {
       match.end();
     }
   };

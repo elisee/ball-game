@@ -8,6 +8,11 @@ interface Team { pub: Game.TeamPub; players: Player[]; }
 export const pub: Game.GamePub = {
   match: null,
   players: [],
+  ball: {
+    x: 0, y: 1, z: 0,
+    vx: 0, vy: 0, vz: 0,
+    playerId: null,
+  },
   teams: []
 };
 
@@ -32,7 +37,14 @@ let tickIntervalId = setInterval(tick, shared.tickInterval);
 
 function tick() {
   const playerMoves: { [playerId: string]: Game.PlayerMove; } = {};
-  // const ball: ...;
+
+  // let ballMove: Game.BallMove;
+  if (pub.match != null && pub.ball.playerId == null) shared.tickBall(pub.ball);
+
+    /*ballMove = {
+      x: pub.ball.x, y: pub.ball.y, z: pub.ball.z,
+      vx: pub.ball.vx, vy: pub.ball.vy, vz: pub.ball.vz
+    };*/
 
   for (const player of players.active) {
     const avatar = player.pub.avatar;
@@ -45,7 +57,7 @@ function tick() {
     };
   }
 
-  const data: Game.TickData = { playerMoves/*, ball */ };
+  const data: Game.TickData = { playerMoves/*, ballMove*/ };
   io.in("game").emit("tick", data);
 
   if (pub.match != null) match.tick();

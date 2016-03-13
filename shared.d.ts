@@ -2,9 +2,20 @@ declare namespace Game {
   interface ErrorCallback { (err: string): void; }
 
   interface GamePub {
-    match: Game.MatchPub;
-    players: Game.PlayerPub[];
-    teams: Game.TeamPub[];
+    match: MatchPub;
+    ball: BallPub;
+    players: PlayerPub[];
+    teams: TeamPub[];
+  }
+
+  interface MatchPub {
+    ticksLeft: number;
+  }
+
+  interface BallPub {
+    x: number; y: number; z: number;
+    vx: number; vy: number; vz: number;
+    playerId: string;
   }
 
   interface PlayerPub {
@@ -27,8 +38,10 @@ declare namespace Game {
     score: number;
   }
 
-  interface MatchPub {
-    ticksLeft: number;
+
+  interface TickData {
+    playerMoves: { [playerId: string]: PlayerMove; };
+    // ballMove?: BallMove;
   }
 
   interface PlayerMove {
@@ -37,10 +50,25 @@ declare namespace Game {
     jump: number;
     angleX: number;
     angleY: number;
-    // shoot?: boolean;
   }
 
-  interface TickData {
-    playerMoves: { [playerId: string]: PlayerMove; };
+  interface PlayerInput {
+    x: number;
+    z: number;
+    jump: boolean;
+    angleX: number;
+    angleY: number;
+
+    throw?: boolean;
+    catch?: boolean;
   }
+
+  /*interface BallMove {
+    x: number;
+    y: number;
+    z: number;
+    vx: number;
+    vy: number;
+    vz: number;
+  }*/
 }

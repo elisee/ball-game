@@ -2,12 +2,13 @@ import * as THREE from "three";
 THREE.Euler.DefaultOrder = "YXZ";
 
 import camera from "./camera";
-import * as court from "./court";
-import ball from "./ball";
+import * as courtModel from "./courtModel";
+import ballModel from "./ballModel";
 import * as character from "./character";
 
 import * as input from "./input";
-import { myPlayerId, players } from "../gameClient";
+import { myPlayerId, players, pub } from "../gameClient";
+import * as shared from "../../shared";
 
 const modelsById: { [playerId: string]: character.Model; } = {};
 
@@ -18,8 +19,8 @@ threeRenderer.shadowMap.enabled = true;
 threeRenderer.shadowMap.type = THREE.PCFShadowMap;
 
 const scene = new THREE.Scene();
-scene.add(court.root);
-scene.add(ball);
+scene.add(courtModel.root);
+scene.add(ballModel);
 
 let animationId: number;
 
@@ -33,13 +34,15 @@ export function stop() {
 }
 
 export function addPlayer(player: Game.PlayerPub) {
-  const model = character.make(player.avatar);
-  court.root.add(model.root);
+  const model = character.makeModel(player.avatar);
+  courtModel.root.add(model.root);
   modelsById[player.id] = model;
 
   if (player.id === myPlayerId) {
     input.initPrediction(player.avatar);
   }
+
+  if (pub.ball.playerId === player.id) catchBall(pub.ball.playerId);
 }
 
 export function removePlayer(playerId: string) {
@@ -50,9 +53,28 @@ export function removePlayer(playerId: string) {
 }
 
 export function reset() {
+  scene.add(ballModel);
+  ballModel.position.set(0, 1, 0);
   for (const playerId in modelsById) removePlayer(playerId);
+}
 
-  // TODO: Reset ball
+export function catchBall(playerId: string) {
+  if (playerId === myPlayerId) {
+    const myPlayer = players.byId[myPlayerId];
+    input.prediction.x = myPlayer.avatar.x;
+    input.prediction.z = myPlayer.avatar.z;
+  }
+
+  ballModel.position.set(shared.armLength, 0, 0);
+  modelsById[playerId].shoulders.add(ballModel);
+}
+
+let ballThrownTimer = 0;
+export function throwBall(ball: Game.BallPub, thrownByMe: boolean) {
+  if (thrownByMe) ballThrownTimer = 5;
+
+  scene.add(ballModel);
+  ballModel.position.set(ball.x, ball.y, ball.z);
 }
 
 const tmpEuler = new THREE.Euler();
@@ -81,10 +103,11 @@ function animate() {
 
     if (playerId === myPlayerId) {
       // TODO: Use proper ticking mechanism
-      input.predict();
-      model.root.position.set(input.predictedMove.x, 0, input.predictedMove.z);
-      model.root.setRotationFromEuler(tmpEuler.set(0, -input.predictedMove.angleY, 0));
-      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, input.predictedMove.angleX));
+      input.predict(pub.match != null && pub.ball.playerId !== myPlayerId, ballThrownTimer > 0);
+
+      model.root.position.set(input.prediction.x, 0, input.prediction.z);
+      model.root.setRotationFromEuler(tmpEuler.set(0, -input.prediction.angleY, 0));
+      model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, input.prediction.angleX));
     } else {
       // TODO: Lerp between previous and current!
       model.root.position.set(avatar.x, 0, avatar.z);
@@ -92,4 +115,13 @@ function animate() {
       model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, avatar.angleX));
     }
   }
+
+  if (pub != null && pub.ball.playerId == null) {
+    ballModel.position.set(pub.ball.x, pub.ball.y, pub.ball.z);
+  }
+}
+
+export function tick() {
+  // TODO: Store next/previous ticks for interpolation/extrapolation
+  if (ballThrownTimer > 0) ballThrownTimer--;
 }

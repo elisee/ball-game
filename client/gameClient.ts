@@ -3,8 +3,9 @@ import * as renderer from "./renderer";
 import * as sidebar from "./sidebar";
 import * as status from "./status";
 import * as input from "./renderer/input";
+import * as shared from "../shared";
 
-let pub: Game.GamePub;
+export let pub: Game.GamePub;
 export let players: { byId: { [id: string]: Game.PlayerPub; } };
 export let myPlayerId: string;
 
@@ -29,6 +30,8 @@ function onWelcome(data: Game.GamePub, playerId: string) {
   socket.on("tick", onTick);
 
   socket.on("startMatch", onStartMatch);
+  socket.on("catchBall", onCatchBall);
+  socket.on("throwBall", onThrowBall);
   socket.on("endMatch", onEndMatch);
 
   if (pub.match != null) {
@@ -49,6 +52,8 @@ function onWelcome(data: Game.GamePub, playerId: string) {
   sidebar.chat.setupInput(false);
 
   if (localStorage["playerName"] != null) sidebar.me.setName(localStorage["playerName"]);
+
+  setInterval(sendInput, shared.tickInterval);
 }
 
 function onAddPlayer(player: Game.PlayerPub) {
@@ -88,11 +93,11 @@ function onJoinTeam(playerId: string, avatar: Game.AvatarPub) {
   renderer.addPlayer(player);
 }
 
-function onTick(data: Game.TickData) {
-  if (players.byId[myPlayerId].avatar != null) {
-    socket.emit("input", input.predictedMove);
-  }
+function sendInput() {
+  if (players.byId[myPlayerId].avatar != null) socket.emit("input", input.prediction);
+}
 
+function onTick(data: Game.TickData) {
   for (const playerId in data.playerMoves) {
     const move = data.playerMoves[playerId];
     const avatar = players.byId[playerId].avatar;
@@ -106,14 +111,35 @@ function onTick(data: Game.TickData) {
   if (pub.match != null) {
     pub.match.ticksLeft--;
     status.setTimer(pub.match.ticksLeft);
+
+    if (pub.ball.playerId == null) shared.tickBall(pub.ball);
   }
+
+  renderer.tick();
 }
 
 function onStartMatch(match: Game.MatchPub) {
   pub.match = match;
 }
 
+function onCatchBall(playerId: string) {
+  pub.ball.playerId = playerId;
+  renderer.catchBall(playerId);
+}
+
+function onThrowBall(ball: Game.BallPub) {
+  const thrownByMe = pub.ball.playerId === myPlayerId;
+  pub.ball = ball;
+  renderer.throwBall(pub.ball, thrownByMe);
+}
+
 function onEndMatch() {
+  const ball = pub.ball;
+  ball.x = ball.z = 0;
+  ball.y = 1;
+  ball.vx = ball.vy = ball.vz = 0;
+  ball.playerId = null;
+
   for (const playerId in players.byId) {
     const player = players.byId[playerId];
     player.avatar = null;

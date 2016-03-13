@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import * as shared from "../../shared";
 
 export const root = new THREE.Group();
 
@@ -12,9 +13,9 @@ wallImage.src = "wall.png";
 wallImage.addEventListener("load", () => { wallTexture.needsUpdate = true; });
 const wallTexture = new THREE.Texture(wallImage, null, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.NearestFilter, THREE.NearestFilter);
 
-const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: floorTexture });
-const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: wallTexture });
-const cageMaterial = new THREE.MeshStandardMaterial({ color: 0x202020, roughness: 0.8, metalness: 0.2 });
+const floorMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: floorTexture });
+const wallMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: wallTexture });
+const cageMaterial = new (THREE as any).MeshStandardMaterial({ color: 0x202020, roughness: 0.8, metalness: 0.2 });
 
 const ambientLight = new THREE.AmbientLight(0xcccccc);
 root.add(ambientLight);
@@ -39,7 +40,7 @@ spotLight3.position.y = 6;
 spotLight3.position.z = 2;
 root.add(spotLight3);
 
-const floor = new THREE.Mesh(new THREE.PlaneBufferGeometry(14, 10), floorMaterial);
+const floor = new THREE.Mesh(new THREE.PlaneBufferGeometry(shared.court.width + shared.court.border * 2, shared.court.depth + shared.court.border * 2), floorMaterial);
 floor.receiveShadow = true;
 floor.rotateX(-Math.PI / 2);
 root.add(floor);
