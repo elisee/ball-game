@@ -4,6 +4,7 @@ THREE.Euler.DefaultOrder = "YXZ";
 import camera from "./camera";
 import * as courtModel from "./courtModel";
 import ballModel from "./ballModel";
+import ballMarker from "./ballMarker";
 import * as character from "./character";
 
 import * as input from "./input";
@@ -21,6 +22,7 @@ threeRenderer.shadowMap.type = THREE.PCFShadowMap;
 const scene = new THREE.Scene();
 scene.add(courtModel.root);
 scene.add(ballModel);
+scene.add(ballMarker);
 
 let animationId: number;
 
@@ -61,6 +63,8 @@ export function reset() {
 export function resetBall() {
   scene.add(ballModel);
   ballModel.position.set(0, 1, 0);
+  ballMarker.position.set(0, 0.01, 0);
+  ballMarker.visible = true;
 }
 
 export function resetBaskets() {
@@ -76,12 +80,15 @@ export function catchBall(playerId: string) {
   }
 
   ballModel.position.set(shared.armLength, 0, 0);
+  ballMarker.visible = false;
+
   modelsById[playerId].shoulders.add(ballModel);
 }
 
 export function throwBall(ball: Game.BallPub) {
   scene.add(ballModel);
   ballModel.position.set(ball.x, ball.y, ball.z);
+  ballMarker.visible = true;
 }
 
 export function score(teamIndex: number) {
@@ -150,6 +157,7 @@ function animate() {
 
   if (pub != null && pub.ball.playerId == null) {
     ballModel.position.set(pub.ball.x, pub.ball.y, pub.ball.z);
+    ballMarker.position.set(pub.ball.x, 0.01, pub.ball.z);
   }
 }
 

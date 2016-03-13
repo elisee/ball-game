@@ -1,15 +1,8 @@
 import * as THREE from "three";
 import * as shared from "../../shared";
+import loadTexture from "./loadTexture";
 
 export const root = new THREE.Group();
-
-function loadTexture(path: string, repeat: boolean) {
-  const image = new Image();
-  image.src = path;
-  image.addEventListener("load", () => { texture.needsUpdate = true; });
-  const texture = new THREE.Texture(image, null, repeat ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping, repeat ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.NearestFilter);
-  return texture;
-}
 
 const floorTexture = loadTexture("floor.png", false);
 const wallTexture = loadTexture("wall.png", true);
