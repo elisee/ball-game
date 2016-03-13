@@ -21,14 +21,14 @@ root.add(ambientLight);
 
 const spotLight1 = new THREE.PointLight(0xffffff, 0.5);
 spotLight1.position.x = 4;
-spotLight1.position.y = 4;
-spotLight1.position.z = 0;
+spotLight1.position.y = 6;
+spotLight1.position.z = -2;
 root.add(spotLight1);
 
 const spotLight2 = new THREE.PointLight(0xffffff, 0.5);
 spotLight2.position.x = -4;
-spotLight2.position.y = 4;
-spotLight2.position.z = 0;
+spotLight2.position.y = 6;
+spotLight2.position.z = -2;
 root.add(spotLight2);
 
 const spotLight3 = new THREE.PointLight(0xffffff, 0.2);
@@ -75,16 +75,16 @@ rightWall.position.y = 2.5;
 rightWall.position.x = 7;
 root.add(rightWall);
 
-const leftCage = new THREE.Mesh(new THREE.PlaneBufferGeometry(4, 2), cageMaterial);
-leftCage.receiveShadow = true;
-leftCage.rotateY(Math.PI / 2);
-leftCage.position.y = 1;
-leftCage.position.x = -6.99;
-root.add(leftCage);
+const leftBasket = new THREE.Mesh(new THREE.PlaneBufferGeometry(3, 1.5), cageMaterial);
+leftBasket.receiveShadow = true;
+leftBasket.rotateY(Math.PI / 2);
+leftBasket.position.y = 2;
+leftBasket.position.x = -6.99;
+root.add(leftBasket);
 
-const rightCage = new THREE.Mesh(new THREE.PlaneBufferGeometry(4, 2), cageMaterial);
-rightCage.receiveShadow = true;
-rightCage.rotateY(-Math.PI / 2);
-rightCage.position.y = 1;
-rightCage.position.x = 6.99;
-root.add(rightCage);
+const rightBasket = new THREE.Mesh(new THREE.PlaneBufferGeometry(3, 1.5), cageMaterial);
+rightBasket.receiveShadow = true;
+rightBasket.rotateY(-Math.PI / 2);
+rightBasket.position.y = 2;
+rightBasket.position.x = 6.99;
+root.add(rightBasket);
