@@ -69,7 +69,7 @@ export default class Player {
     io.in("game").emit("joinTeam", this.pub.id, this.pub.avatar);
 
     // Launch match
-    if (game.pub.match == null && game.players.active.length === /* shared.maxPlayersPerTeam * 2 */ 1) {
+    if (game.pub.match == null && game.players.active.length === shared.maxPlayersPerTeam * 2) {
       match.start();
     }
 
