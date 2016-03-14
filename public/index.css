@@ -5,6 +5,7 @@ body { margin: 0; font-family: sans-serif; }
 body {
   display: flex;
   font-size: 0.8em;
+  color: #444;
 }
 
 .main {
@@ -71,6 +72,10 @@ body {
 
 .sidebar .log .author {
   font-weight: bold;
+}
+
+.sidebar .welcome {
+  color: #666;
 }
 
 .sidebar header {
