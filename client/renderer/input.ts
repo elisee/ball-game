@@ -12,9 +12,20 @@ export let hasJustPressedLeftTrigger = false;
 export let prediction: Game.PlayerInput;
 
 export function gather() {
-  const gamepad = navigator.getGamepads()[0];
-  if (gamepad == null) return;
+  const gamepads = navigator.getGamepads();
 
+  let hasFoundGamepad = false;
+
+  for (const gamepad of gamepads) {
+    if (gamepad == null) continue;
+    if (gamepad.axes.length < 2) continue;
+    if (gamepad.buttons.length < 8) continue;
+    gatherGamepad(gamepad);
+    break;
+  }
+}
+
+function gatherGamepad(gamepad: Gamepad) {
   const leftX = gamepad.axes[0];
   const leftY = gamepad.axes[1];
   if (Math.sqrt(leftX * leftX + leftY * leftY) > 0.35) {
