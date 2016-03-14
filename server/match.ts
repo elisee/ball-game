@@ -17,7 +17,7 @@ export function tick() {
   }
 
   if (ball.playerId == null) {
-    let scoringTeamIndex = shared.tickBall(ball);
+    let { hitBasketTeamIndex: scoringTeamIndex } = shared.tickBall(ball);
     if (scoringTeamIndex != null) {
       const scoringPlayer = game.players.byId[game.lastBallPlayerId];
       // NOTE: Player might have disconnected in the meantime
