@@ -67,7 +67,7 @@ export function reset() {
 
 export function resetBall() {
   scene.add(ballModel);
-  ballModel.position.set(0, 1, 0);
+  ballModel.position.set(0, shared.ballPhysics.initialY, 0);
   ballMarker.position.set(0, 0.01, 0);
   ballMarker.visible = true;
 }

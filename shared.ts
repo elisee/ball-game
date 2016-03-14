@@ -25,6 +25,7 @@ export const basket = {
 };
 
 export const ballPhysics = {
+  initialY: 1,
   radius: 0.3,
   catchRadius: 0.5,
 
@@ -115,7 +116,7 @@ export function tickBall(ball: Game.BallPub) {
 
 export function resetBall(ball: Game.BallPub) {
   ball.x = ball.z = 0;
-  ball.y = 1;
+  ball.y = ballPhysics.initialY;
   ball.vx = ball.vz = 0;
   ball.vy = 0.3;
   ball.playerId = null;
