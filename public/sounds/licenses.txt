@@ -1,0 +1,4 @@
+bounce.wav — CC0 http://freesound.org/people/zmobie/sounds/319783/
+throw.wav — CC0 http://freesound.org/people/vmgraw/sounds/257713/
+catch.wav — CC0 http://freesound.org/people/ftpalad/sounds/119925/
+score.wav — CC0 http://freesound.org/people/santino_c/sounds/170825/

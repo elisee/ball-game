@@ -68,6 +68,7 @@ const basketZmin = -basket.width / 2;
 const basketZmax = basket.width / 2;
 
 export function tickBall(ball: Game.BallPub) {
+  let bounce = 0;
   let hitBasketTeamIndex: number = null;
 
   ball.x += ball.vx;
@@ -78,6 +79,7 @@ export function tickBall(ball: Game.BallPub) {
     }
 
     ball.x = ballXmin + (ballXmin - ball.x) * ballPhysics.bounce;
+    bounce = Math.abs(ball.vx);
     ball.vx = -ball.vx * ballPhysics.bounce;
   } else if (ball.x > ballXmax) {
     if (ball.y > basketYmin && ball.y < basketYmax &&
@@ -86,15 +88,18 @@ export function tickBall(ball: Game.BallPub) {
     }
 
     ball.x = ballXmax + (ballXmax - ball.x) * ballPhysics.bounce;
+    bounce = Math.abs(ball.vx);
     ball.vx = -ball.vx * ballPhysics.bounce;
   }
 
   ball.z += ball.vz;
   if (ball.z < ballZmin) {
     ball.z = ballZmin + (ballZmin - ball.z) * ballPhysics.bounce;
+    bounce = Math.abs(ball.vz);
     ball.vz = -ball.vz * ballPhysics.bounce;
   } else if (ball.z > ballZmax) {
     ball.z = ballZmax + (ballZmax - ball.z) * ballPhysics.bounce;
+    bounce = Math.abs(ball.vz);
     ball.vz = -ball.vz * ballPhysics.bounce;
   }
 
@@ -106,6 +111,7 @@ export function tickBall(ball: Game.BallPub) {
     ball.vy -= ballPhysics.gravity;
 
     if (ball.y < ballPhysics.radius) {
+      bounce = Math.abs(ball.vy);
       if (ball.vy > -0.2) {
         ball.y = ballPhysics.radius;
         ball.vy = 0;
@@ -116,7 +122,7 @@ export function tickBall(ball: Game.BallPub) {
     }
   }
 
-  return hitBasketTeamIndex;
+  return { bounce, hitBasketTeamIndex };
 }
 
 export function resetBall(ball: Game.BallPub) {

@@ -4,10 +4,10 @@ import loadTexture from "./loadTexture";
 
 export const root = new THREE.Group();
 
-const floorTexture = loadTexture("floor.png", false);
-const wallTexture = loadTexture("wall.png", true);
-const redBasketTexture = loadTexture("red-basket.png", true);
-const blueBasketTexture = loadTexture("blue-basket.png", true);
+const floorTexture = loadTexture("textures/floor.png", false);
+const wallTexture = loadTexture("textures/wall.png", true);
+const redBasketTexture = loadTexture("textures/red-basket.png", true);
+const blueBasketTexture = loadTexture("textures/blue-basket.png", true);
 
 const floorMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: floorTexture });
 const wallMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: wallTexture });

@@ -7,6 +7,7 @@ import ballModel from "./ballModel";
 import ballMarker from "./ballMarker";
 import * as character from "./character";
 
+import * as audio from "./audio";
 import * as input from "./input";
 import { socket, myPlayerId, players, pub } from "../gameClient";
 import * as shared from "../../shared";
@@ -80,6 +81,7 @@ export function resetBaskets() {
   (courtModel.blueBasket.material as any).color.setHex(0xffffff);
 }
 
+const catchSound = audio.loadSound("sounds/catch.wav");
 export function catchBall(playerId: string) {
   if (playerId === myPlayerId) {
     const myPlayer = players.byId[myPlayerId];
@@ -91,20 +93,25 @@ export function catchBall(playerId: string) {
   ballMarker.visible = false;
 
   modelsById[playerId].shoulders.add(ballModel);
+  audio.playSound(catchSound);
 }
 
+const throwSound = audio.loadSound("sounds/throw.wav");
 export function throwBall(ball: Game.BallPub) {
   scene.add(ballModel);
   ballModel.position.set(ball.x, ball.y, ball.z);
   ballMarker.visible = true;
+  audio.playSound(throwSound);
 }
 
+const scoreSound = audio.loadSound("sounds/score.wav");
 export function score(teamIndex: number) {
   if (teamIndex === 0) (courtModel.blueBasket.material as any).color.setRGB(3, 3, 3);
   else (courtModel.redBasket.material as any).color.setRGB(3, 3, 3);
 
   ballModel.material.transparent = true;
   ballModel.material.opacity = 0.5;
+  audio.playSound(scoreSound);
 }
 
 const tmpEuler = new THREE.Euler();

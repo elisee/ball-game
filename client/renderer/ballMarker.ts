@@ -2,7 +2,7 @@ import * as THREE from "three";
 import * as shared from "../../shared";
 import loadTexture from "./loadTexture";
 
-const markerTexture = loadTexture("ball-marker.png", false);
+const markerTexture = loadTexture("textures/ball-marker.png", false);
 
 const markerMaterial = new (THREE as any).MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0.3, map: markerTexture, transparent: true });
 

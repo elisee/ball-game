@@ -3,6 +3,7 @@ import * as renderer from "./renderer";
 import * as sidebar from "./sidebar";
 import * as status from "./status";
 import * as input from "./renderer/input";
+import * as audio from "./renderer/audio";
 import * as shared from "../shared";
 
 export let pub: Game.GamePub;
@@ -110,6 +111,8 @@ function sendInput() {
   if (players.byId[myPlayerId].avatar != null) socket.emit("input", input.prediction);
 }
 
+const bounceSound = audio.loadSound("sounds/bounce.wav");
+
 function onTick(data: Game.TickData) {
 
   for (const playerId in data.playerMoves) {
@@ -139,7 +142,13 @@ function onTick(data: Game.TickData) {
       status.setTimer(pub.match.ticksLeft);
     }
 
-    if (pub.ball.playerId == null) shared.tickBall(pub.ball);
+    if (pub.ball.playerId == null) {
+      const { bounce } = shared.tickBall(pub.ball);
+      if (bounce > 0) {
+        console.log(bounce);
+        audio.playSound(bounceSound, Math.min(0.5, bounce * bounce * 0.5));
+      }
+    }
   }
 
   renderer.tick();
