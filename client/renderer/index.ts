@@ -36,7 +36,7 @@ export function stop() {
 }
 
 export function addPlayer(player: Game.PlayerPub) {
-  const model = character.makeModel(player.avatar);
+  const model = character.makeModel(player.avatar, player.name);
   courtModel.root.add(model.root);
   modelsById[player.id] = model;
 
@@ -52,6 +52,11 @@ export function removePlayer(playerId: string) {
   model.root.parent.remove(model.root);
 
   delete modelsById[playerId];
+}
+
+export function setPlayerName(playerId: string, name: string) {
+  const model = modelsById[playerId];
+  character.updateNametag(model, name);
 }
 
 export function reset() {
@@ -137,6 +142,8 @@ function animate() {
     const model = modelsById[playerId];
     const { avatar } = players.byId[playerId];
     const hasBall = pub.ball.playerId === playerId;
+
+    model.nametag.setRotationFromEuler(tmpEuler.set(0, -sceneAngleY, 0));
 
     if (playerId === myPlayerId) {
       // TODO: Use proper ticking mechanism

@@ -85,6 +85,7 @@ function onChat(playerId: string, text: string) {
 
 function onSetName(playerId: string, name: string) {
   players.byId[playerId].name = name;
+  renderer.setPlayerName(playerId, name);
   sidebar.players.setName(playerId, name);
 }
 
