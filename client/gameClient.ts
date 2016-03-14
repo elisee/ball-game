@@ -160,7 +160,7 @@ function onCatchBall(playerId: string) {
 }
 
 function onThrowBall(ball: Game.BallPub) {
-if (pub.ball.playerId === myPlayerId) renderer.ballThrownTimer = 20;
+if (pub.ball.playerId === myPlayerId) renderer.ballThrownTimer = 10;
   pub.ball = ball;
   renderer.throwBall(pub.ball);
 }
