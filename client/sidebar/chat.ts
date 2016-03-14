@@ -1,4 +1,5 @@
 import { socket } from "../gameClient";
+import * as notifications from "../notifications";
 
 const chatLog = document.querySelector(".sidebar .log") as HTMLDivElement;
 const chatInput = document.querySelector(".sidebar textarea") as HTMLTextAreaElement;
@@ -21,6 +22,8 @@ export function append(author: string, text: string) {
 
   chatLog.appendChild(div);
   chatLog.scrollTop = 9e9;
+
+  notifications.show(`${author}: ${text}`);
 }
 
 chatInput.addEventListener("keydown", onKeyDown);
