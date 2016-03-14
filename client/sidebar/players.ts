@@ -74,8 +74,8 @@ export function clearTeams() {
   for (const teamIndex in teamLists) {
     const teamList = teamLists[teamIndex];
 
-    for (let i = 1; i < teamList.children.length; i++) {
-      const row = teamList.children[i];
+    while (teamList.children.length > 1) {
+      const row = teamList.children[1];
       row.parentElement.removeChild(row);
       row.removeChild(row.querySelector("td.score"));
       (row.querySelector("td.name") as HTMLTableCellElement).colSpan = 2;
