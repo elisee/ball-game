@@ -68,6 +68,9 @@ export function reset() {
 export function resetBall() {
   scene.add(ballModel);
   ballModel.position.set(0, shared.ballPhysics.initialY, 0);
+  ballModel.material.transparent = false;
+  ballModel.material.opacity = 1;
+
   ballMarker.position.set(0, 0.01, 0);
   ballMarker.visible = true;
 }
@@ -99,6 +102,9 @@ export function throwBall(ball: Game.BallPub) {
 export function score(teamIndex: number) {
   if (teamIndex === 0) (courtModel.blueBasket.material as any).color.setRGB(3, 3, 3);
   else (courtModel.redBasket.material as any).color.setRGB(3, 3, 3);
+
+  ballModel.material.transparent = true;
+  ballModel.material.opacity = 0.5;
 }
 
 const tmpEuler = new THREE.Euler();
