@@ -50,7 +50,7 @@ function tick() {
     playerMoves[player.pub.id] = {
       x: avatar.x,
       z: avatar.z,
-      jump: avatar.jump,
+      jump: { timer: avatar.jump.timer, withBall: avatar.jump.withBall },
       angleY: avatar.angleY,
       angleX: avatar.angleX,
       catching: avatar.catching

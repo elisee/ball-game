@@ -30,10 +30,15 @@ declare namespace Game {
     score: number;
     x: number;
     z: number;
-    jump: number;
+    jump: AvatarJump;
     angleX: number;
     angleY: number;
     catching: boolean;
+  }
+
+  interface AvatarJump {
+    timer: number;
+    withBall: boolean;
   }
 
   interface TeamPub {
@@ -49,7 +54,7 @@ declare namespace Game {
   interface PlayerMove {
     x: number;
     z: number;
-    jump: number;
+    jump: AvatarJump;
     angleX: number;
     angleY: number;
     catching: boolean;

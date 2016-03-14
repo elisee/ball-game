@@ -13,8 +13,12 @@ export const armLength = 0.6;
 export const resetBallDuration = 60;
 
 export const jump = {
-  duration: 20,
-  boost: 0.4,
+  durationNoBall: 25,
+  boostNoBall: 0.5,
+
+  durationWithBall: 20,
+  boostWithBall: 0.4,
+
   gravity: 0.05
 };
 
@@ -44,11 +48,12 @@ export function getArmPosition(avatar: Game.AvatarPub) {
   return { x, y, z };
 }
 
-export function getAvatarY(jumpTimer: number) {
-  if (jumpTimer === 0) return 0;
+export function getAvatarY(jumpState: Game.AvatarJump) {
+  if (jumpState.timer === 0) return 0;
 
-  const n = jump.duration - jumpTimer;
-  return Math.max(0, (jump.boost * n) - jump.gravity * (n - 1) * n / 2);
+  const n = (jumpState.withBall ? jump.durationWithBall : jump.durationNoBall) - jumpState.timer;
+  const boost = (jumpState.withBall ? jump.boostWithBall : jump.boostNoBall);
+  return Math.max(0, boost * n - jump.gravity * (n - 1) * n / 2);
 }
 
 const ballXmin = -court.width / 2 - court.border + ballPhysics.radius;

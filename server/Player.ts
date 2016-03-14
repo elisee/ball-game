@@ -56,7 +56,7 @@ export default class Player {
     const x = teamIndex === 0 ? -5 : 5;
     const z = (team.players.length - 1) * 3;
     const angleY = teamIndex === 0 ? 0 : Math.PI;
-    this.pub.avatar = { teamIndex, score: 0, x, z, jump: 0, angleX: 0, angleY, catching: false };
+    this.pub.avatar = { teamIndex, score: 0, x, z, jump: { timer: 0, withBall: false }, angleX: 0, angleY, catching: false };
     team.players.push(this);
 
     // Add to active players list
@@ -81,7 +81,7 @@ export default class Player {
 
   tick() {
     const avatar = this.pub.avatar;
-    if (avatar.jump > 0) avatar.jump--;
+    if (avatar.jump.timer > 0) avatar.jump.timer--;
   }
 
   private onInput = (input: Game.PlayerInput) => {
@@ -89,15 +89,17 @@ export default class Player {
     if (avatar == null) return;
 
     const ball = game.pub.ball;
+    const hasBall = ball.playerId === this.pub.id;
 
-    if (game.pub.match != null && ball.playerId !== this.pub.id) {
+    if (game.pub.match != null && !hasBall) {
       // TODO: Validate that move is possible in timeframe
       avatar.x = input.x;
       avatar.z = input.z;
     }
 
-    if (input.jumping && avatar.jump === 0) {
-      avatar.jump = shared.jump.duration;
+    if (input.jumping && avatar.jump.timer === 0) {
+      avatar.jump.timer = hasBall ? shared.jump.durationWithBall : shared.jump.durationNoBall;
+      avatar.jump.withBall = hasBall;
     }
 
     avatar.angleX = input.angleX;
@@ -110,7 +112,7 @@ export default class Player {
       const dx = ball.x - arm.x;
       const dz = ball.z - arm.z;
 
-      const dy = (ball.y > shared.shoulderY || avatar.jump !== 0) ? ball.y - arm.y : 0;
+      const dy = (ball.y > shared.shoulderY || avatar.jump.timer !== 0) ? ball.y - arm.y : 0;
 
       if (Math.sqrt(dx * dx + dz * dz + dy * dy) <= shared.ballPhysics.catchRadius) {
         ball.playerId = game.lastBallPlayerId = this.pub.id;

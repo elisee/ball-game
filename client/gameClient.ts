@@ -117,7 +117,8 @@ function onTick(data: Game.TickData) {
     const avatar = players.byId[playerId].avatar;
     avatar.x = move.x;
     avatar.z = move.z;
-    avatar.jump = move.jump;
+    avatar.jump.timer = move.jump.timer;
+    avatar.jump.withBall = move.jump.withBall;
     avatar.angleY = move.angleY;
     avatar.angleX = move.angleX;
     avatar.catching = move.catching;
