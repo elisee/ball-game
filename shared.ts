@@ -35,7 +35,7 @@ export const ballPhysics = {
 
   drag: 0.98,
   bounce: 0.6,
-  gravity: 0.02
+  gravity: 0.04
 };
 
 
@@ -106,11 +106,11 @@ export function tickBall(ball: Game.BallPub) {
     ball.vy -= ballPhysics.gravity;
 
     if (ball.y < ballPhysics.radius) {
-      if (ball.vy > -0.15) {
+      if (ball.vy > -0.2) {
         ball.y = ballPhysics.radius;
         ball.vy = 0;
       } else {
-        ball.y = ballPhysics.radius + (ballPhysics.radius - ball.y) * ballPhysics.bounce;
+        ball.y = ballPhysics.radius + (ballPhysics.radius - ball.y) * ballPhysics.bounce * ballPhysics.bounce;
         ball.vy = -ball.vy * ballPhysics.bounce;
       }
     }
