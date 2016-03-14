@@ -176,9 +176,9 @@ function onScore(teamIndex: number, playerId: string) {
     if (player.avatar.teamIndex === teamIndex) {
       player.avatar.score += 2;
       sidebar.players.setPlayerScore(playerId, player.avatar.score);
-      sidebar.chat.appendInfo(`WHOOPS! ${player.name} scores for team ${teamName}!`, false);
-    } else {
       sidebar.chat.appendInfo(`YAY! ${player.name} scores for team ${teamName}!`, false);
+    } else {
+      sidebar.chat.appendInfo(`WHOOPS! ${player.name} scores for team ${teamName}!`, false);
     }
   } else {
     sidebar.chat.appendInfo(`OH! ${teamName} scores!`, false);
