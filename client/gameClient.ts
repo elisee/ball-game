@@ -47,8 +47,8 @@ function onWelcome(data: Game.GamePub, playerId: string) {
     if (player.avatar != null) renderer.addPlayer(player);
     sidebar.players.add(player);
   }
-  sidebar.players.updateTeamScore(0, pub.teams[0].score);
-  sidebar.players.updateTeamScore(1, pub.teams[1].score);
+  sidebar.players.setTeamScore(0, pub.teams[0].score);
+  sidebar.players.setTeamScore(1, pub.teams[1].score);
 
 
   const myPlayer = players.byId[myPlayerId];
@@ -146,8 +146,8 @@ function onTick(data: Game.TickData) {
 
 function onStartMatch(match: Game.MatchPub) {
   pub.match = match;
-  sidebar.players.updateTeamScore(0, 0);
-  sidebar.players.updateTeamScore(1, 0);
+  sidebar.players.setTeamScore(0, 0);
+  sidebar.players.setTeamScore(1, 0);
   status.setScores(pub.teams[0].score, pub.teams[1].score);
 
   sidebar.chat.appendInfo("The match starts!", true);
@@ -167,13 +167,22 @@ if (pub.ball.playerId === myPlayerId) renderer.ballThrownTimer = 20;
 function onScore(teamIndex: number, playerId: string) {
   pub.match.scoreTimer = shared.resetBallDuration;
   pub.teams[teamIndex].score += 2;
-  sidebar.players.updateTeamScore(teamIndex, pub.teams[teamIndex].score);
+  sidebar.players.setTeamScore(teamIndex, pub.teams[teamIndex].score);
   renderer.score(teamIndex);
 
   const player = players.byId[playerId];
   const teamName = (teamIndex === 0) ? "RED" : "BLUE";
-  if (player != null) sidebar.chat.appendInfo(`${player.name} scores for team ${teamName}!`, false);
-  else sidebar.chat.appendInfo(`${teamName} scores!`, false);
+  if (player != null && player.avatar != null) {
+    if (player.avatar.teamIndex === teamIndex) {
+      player.avatar.score += 2;
+      sidebar.players.setPlayerScore(playerId, player.avatar.score);
+      sidebar.chat.appendInfo(`WHOOPS! ${player.name} scores for team ${teamName}!`, false);
+    } else {
+      sidebar.chat.appendInfo(`YAY! ${player.name} scores for team ${teamName}!`, false);
+    }
+  } else {
+    sidebar.chat.appendInfo(`OH! ${teamName} scores!`, false);
+  }
 
   status.setScores(pub.teams[0].score, pub.teams[1].score);
 }

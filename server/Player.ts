@@ -12,7 +12,7 @@ export default class Player {
   pub: Game.PlayerPub;
 
   constructor(public socket: SocketIO.Socket) {
-    this.pub = { id: getNextPlayerId(), name: `Guest${Math.floor(1000 + Math.random() * 9000)}`, avatar: null };
+    this.pub = { id: getNextPlayerId(), name: `Guest${Math.floor(1000 + Math.random() * 9000)}`, score: 0, avatar: null };
     game.pub.players.push(this.pub);
     game.players.byId[this.pub.id] = this;
     game.players.all.push(this);

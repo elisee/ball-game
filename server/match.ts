@@ -19,6 +19,12 @@ export function tick() {
   if (ball.playerId == null) {
     let scoringTeamIndex = shared.tickBall(ball);
     if (scoringTeamIndex != null) {
+      const scoringPlayer = game.players.byId[game.lastBallPlayerId];
+      // NOTE: Player might have disconnected in the meantime
+      if (scoringPlayer != null && scoringPlayer.pub.avatar != null) {
+        if (scoringPlayer.pub.avatar.teamIndex === scoringTeamIndex) scoringPlayer.pub.avatar.score += 2;
+      }
+
       io.in("game").emit("score", scoringTeamIndex, game.lastBallPlayerId);
       game.pub.match.scoreTimer = shared.resetBallDuration;
       game.pub.teams[scoringTeamIndex].score += 2;

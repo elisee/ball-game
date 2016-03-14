@@ -61,8 +61,13 @@ export function setTeam(playerId: string, teamIndex: number) {
   }
 }
 
-export function updateTeamScore(teamIndex: number, score: number) {
+export function setTeamScore(teamIndex: number, score: number) {
   teamLists[teamIndex].querySelector(".score").textContent = score.toString();
+}
+
+export function setPlayerScore(playerId: string, score: number) {
+  const scoreCell = playersList.querySelector(`tr[data-player-id="${playerId}"] td.score`) as HTMLTableRowElement;
+  if (scoreCell != null) scoreCell.textContent = score.toString();
 }
 
 export function remove(playerId: string) {
