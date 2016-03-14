@@ -25,7 +25,7 @@ export const basket = {
 };
 
 export const ballPhysics = {
-  initialY: 1,
+  initialY: 2,
   radius: 0.3,
   catchRadius: 0.5,
 
