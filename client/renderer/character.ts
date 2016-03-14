@@ -21,7 +21,7 @@ const teamMaterials = [
   new (THREE as any).MeshStandardMaterial({ color: 0x4444ff, roughness: 0.8, metalness: 0.3 }),
 ];
 
-const nametagGeometry = new THREE.PlaneGeometry(1, 0.5);
+const nametagGeometry = new THREE.PlaneGeometry(1, 0.25);
 const bodyGeometry = new THREE.BoxGeometry(0.4, 0.4, 0.5);
 const headGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 const armGeometry = new THREE.BoxGeometry(0.6, 0.2, 0.2);
@@ -29,14 +29,14 @@ armGeometry.applyMatrix(new THREE.Matrix4().makeTranslation(0.3, 0, 0));
 const legGeometry = new THREE.BoxGeometry(0.2, 0.6, 0.2);
 legGeometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -0.3, 0));
 
-export function makeModel(avatar: Game.AvatarPub, name: string): Model {
+export function makeModel(avatar: Game.AvatarPub, name: string, isMe: boolean): Model {
   const root = new THREE.Group();
   root.position.x = avatar.x;
   root.position.z = avatar.z;
 
   const nametagCanvas = document.createElement("canvas");
   nametagCanvas.width = 256;
-  nametagCanvas.height = 128;
+  nametagCanvas.height = 64;
   const nametagCtx = nametagCanvas.getContext("2d");
 
   const nametagTexture = new THREE.Texture(nametagCanvas, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.LinearFilter);
@@ -93,24 +93,24 @@ export function makeModel(avatar: Game.AvatarPub, name: string): Model {
   pelvis.add(rightLeg);
 
   const model = { root, nametag, nametagCtx, body, head, shoulders, leftArm, rightArm, leftLeg, rightLeg };
-  updateNametag(model, name);
+  updateNametag(model, name, isMe);
 
   return model;
 }
 
-export function updateNametag(model: Model, name: string) {
+export function updateNametag(model: Model, name: string, isMe: boolean) {
   name = name.toUpperCase();
 
   const ctx = model.nametagCtx;
-  ctx.font = "48px sans-serif";
-  ctx.canvas.width = ctx.measureText(name).width + 64;
+  ctx.font = "bold 48px sans-serif";
+  ctx.canvas.width = ctx.measureText(name).width + 32;
 
-  ctx.fillStyle = "#000";
+  ctx.fillStyle = isMe ? "rgba(255, 255, 255, 1)" : "rgba(0, 0, 0, 0.5)";
   ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.font = "48px sans-serif";
+  ctx.font = "bold 48px sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle =  isMe ? "#000" : "#fff";
   ctx.fillText(name.toUpperCase(), ctx.canvas.width / 2, ctx.canvas.height / 2);
   (model.nametag.material as THREE.MeshBasicMaterial).map.needsUpdate = true;
 

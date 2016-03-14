@@ -36,7 +36,7 @@ export function stop() {
 }
 
 export function addPlayer(player: Game.PlayerPub) {
-  const model = character.makeModel(player.avatar, player.name);
+  const model = character.makeModel(player.avatar, player.name, player.id === myPlayerId);
   courtModel.root.add(model.root);
   modelsById[player.id] = model;
 
@@ -56,7 +56,7 @@ export function removePlayer(playerId: string) {
 
 export function setPlayerName(playerId: string, name: string) {
   const model = modelsById[playerId];
-  if (model != null) character.updateNametag(model, name);
+  if (model != null) character.updateNametag(model, name, playerId === myPlayerId);
 }
 
 export function reset() {
