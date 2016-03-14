@@ -116,8 +116,23 @@ function lerp(a: number, b: number, v: number) {
 }
 
 export let ballThrownTimer = 0;
-function animate() {
+
+let previousTime: number;
+let accumulatedTime = 0;
+const clientTickDuration = 1 / 60 * 1000;
+const maxAccumulatedTime = clientTickDuration * 5;
+
+function animate(time: number) {
   animationId = requestAnimationFrame(animate);
+
+  if (previousTime != null) {
+    const elapsedTime = time - previousTime;
+    accumulatedTime = Math.min(accumulatedTime + elapsedTime, maxAccumulatedTime);
+  }
+  previousTime = time;
+
+  const ticks = Math.floor(accumulatedTime / clientTickDuration);
+  accumulatedTime -= ticks * clientTickDuration;
 
   if (pub != null && pub.match == null) {
     sceneAngleY += Math.PI / 640;
@@ -152,8 +167,7 @@ function animate() {
     model.nametag.setRotationFromEuler(tmpEuler.set(0, -sceneAngleY, 0));
 
     if (playerId === myPlayerId) {
-      // TODO: Use proper ticking mechanism
-      input.predict(pub.match != null, pub.ball.playerId === myPlayerId, ballThrownTimer > 0);
+      for (let i = 0; i < ticks; i++) input.predict(pub.match != null, pub.ball.playerId === myPlayerId, ballThrownTimer > 0);
 
       model.root.position.set(input.prediction.x, 0, input.prediction.z);
       model.body.setRotationFromEuler(tmpEuler.set(0, -input.prediction.angleY, 0));
