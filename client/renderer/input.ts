@@ -78,5 +78,5 @@ export function predict(matchStarted: boolean, hasBall: boolean, throwCooldown: 
   prediction.angleX = Math.PI / 3 * rightTrigger;
 
   prediction.jumping = jumpPressed;
-  prediction.catching = (isLeftTriggerDown || rightTrigger > 0) && !hasBall && !throwCooldown ? true : undefined;
+  prediction.catching = rightTrigger > 0 && !hasBall && !throwCooldown ? true : undefined;
 }

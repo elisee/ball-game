@@ -20,14 +20,27 @@ body {
 
 .main .status {
   position: absolute;
-  top: 0;
+  top: 1em;
   left: 0;
   right: 0;
-  padding: 1em;
+  text-align: center;
+  color: #ccc;
+  font-size: 1.5em;
+}
+
+.main .scores {
+  position: absolute;
+  top: 2em;
+  font-size: 2em;
+  left: 0;
+  right: 0;
   text-align: center;
   font-size: 2em;
   color: #eee;
 }
+
+.main .scores .red { color: #f44; }
+.main .scores .blue { color: #44f; }
 
 .sidebar {
   width: 300px;
@@ -74,7 +87,7 @@ body {
   font-weight: bold;
 }
 
-.sidebar .welcome {
+.sidebar .log .info {
   color: #666;
 }
 

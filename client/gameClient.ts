@@ -37,6 +37,7 @@ function onWelcome(data: Game.GamePub, playerId: string) {
 
   if (pub.match != null) {
     status.setTimer(pub.match.ticksLeft);
+    status.setScores(pub.teams[0].score, pub.teams[1].score);
   } else {
     status.setText("Waiting for players...");
   }
@@ -64,6 +65,7 @@ function onWelcome(data: Game.GamePub, playerId: string) {
 function onAddPlayer(player: Game.PlayerPub) {
   pub.players.push(player);
   players.byId[player.id] = player;
+  sidebar.chat.appendInfo(`${player.name} connected.`, true);
 
   if (player.avatar != null) renderer.addPlayer(player);
   sidebar.players.add(player);
@@ -73,6 +75,7 @@ function onRemovePlayer(playerId: string) {
   sidebar.players.remove(playerId);
 
   const player = players.byId[playerId];
+  sidebar.chat.appendInfo(`${player.name} has disconnected.`, false);
   if (player.avatar != null) renderer.removePlayer(playerId);
 
   pub.players.splice(pub.players.indexOf(player), 1);
@@ -84,6 +87,7 @@ function onChat(playerId: string, text: string) {
 }
 
 function onSetName(playerId: string, name: string) {
+  sidebar.chat.appendInfo(`${players.byId[playerId].name} changed his name to ${name}.`, false);
   players.byId[playerId].name = name;
   renderer.setPlayerName(playerId, name);
   sidebar.players.setName(playerId, name);
@@ -129,7 +133,7 @@ function onTick(data: Game.TickData) {
         renderer.resetBall();
         renderer.resetBaskets();
       }
-    status.setText("SCOOOORE!");
+    status.setText("Scoooore!");
     } else {
       status.setTimer(pub.match.ticksLeft);
     }
@@ -144,6 +148,9 @@ function onStartMatch(match: Game.MatchPub) {
   pub.match = match;
   sidebar.players.updateTeamScore(0, 0);
   sidebar.players.updateTeamScore(1, 0);
+  status.setScores(pub.teams[0].score, pub.teams[1].score);
+
+  sidebar.chat.appendInfo("The match starts!", true);
 }
 
 function onCatchBall(playerId: string) {
@@ -157,19 +164,28 @@ if (pub.ball.playerId === myPlayerId) renderer.ballThrownTimer = 20;
   renderer.throwBall(pub.ball);
 }
 
-function onScore(teamIndex: number) {
+function onScore(teamIndex: number, playerId: string) {
   pub.match.scoreTimer = shared.resetBallDuration;
   pub.teams[teamIndex].score += 2;
   sidebar.players.updateTeamScore(teamIndex, pub.teams[teamIndex].score);
   renderer.score(teamIndex);
+
+  const player = players.byId[playerId];
+  const teamName = (teamIndex === 0) ? "RED" : "BLUE";
+  if (player != null) sidebar.chat.appendInfo(`${player.name} scores for team ${teamName}!`, false);
+  else sidebar.chat.appendInfo(`${teamName} scores!`, false);
+
+  status.setScores(pub.teams[0].score, pub.teams[1].score);
 }
 
 function onEndMatch() {
   let result: string;
   if (pub.teams[0].score > pub.teams[1].score) result = "Team RED wins!";
-  else if (pub.teams[0].score > pub.teams[1].score) result = "Team BLUE wins!";
+  else if (pub.teams[1].score > pub.teams[0].score) result = "Team BLUE wins!";
   else result = "It's a tie!";
+  result += ` ${pub.teams[0].score} — ${pub.teams[1].score}`;
   status.setText(result);
+  sidebar.chat.appendInfo(result, true);
 
   pub.teams[0].score = 0;
   pub.teams[1].score = 0;

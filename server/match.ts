@@ -19,7 +19,7 @@ export function tick() {
   if (ball.playerId == null) {
     let scoringTeamIndex = shared.tickBall(ball);
     if (scoringTeamIndex != null) {
-      io.in("game").emit("score", scoringTeamIndex);
+      io.in("game").emit("score", scoringTeamIndex, game.lastBallPlayerId);
       game.pub.match.scoreTimer = shared.resetBallDuration;
       game.pub.teams[scoringTeamIndex].score += 2;
     }

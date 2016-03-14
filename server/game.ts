@@ -31,6 +31,8 @@ export const teams: Team[] = [
 pub.teams.push(teams[0].pub);
 pub.teams.push(teams[1].pub);
 
+export let lastBallPlayerId: string;
+
 export function addPlayer(socket: SocketIO.Socket) {
   new Player(socket);
 }

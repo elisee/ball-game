@@ -113,7 +113,7 @@ export default class Player {
       const dy = (ball.y > shared.shoulderY) ? ball.y - arm.y : 0;
 
       if (Math.sqrt(dx * dx + dz * dz + dy * dy) <= shared.ballPhysics.catchRadius) {
-        ball.playerId = this.pub.id;
+        ball.playerId = game.lastBallPlayerId = this.pub.id;
         io.in("game").emit("catchBall", ball.playerId);
       }
     }

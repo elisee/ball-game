@@ -26,6 +26,17 @@ export function append(author: string, text: string) {
   notifications.show(`${author}: ${text}`);
 }
 
+export function appendInfo(text: string, notify: boolean) {
+  const div = document.createElement("div");
+  div.className = "info";
+  div.textContent = text;
+
+  chatLog.appendChild(div);
+  chatLog.scrollTop = 9e9;
+
+  if (notify) notifications.show(text);
+}
+
 chatInput.addEventListener("keydown", onKeyDown);
 
 function onKeyDown(event: KeyboardEvent) {
