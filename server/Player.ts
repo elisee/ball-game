@@ -136,8 +136,8 @@ export default class Player {
     ball.y = arm.y;
     ball.z = arm.z;
 
-    ball.vx = Math.cos(avatar.angleY) * throwPower;
-    ball.vz = Math.sin(avatar.angleY) * throwPower;
+    ball.vx = Math.cos(avatar.angleY) * (1 + Math.cos(avatar.angleX)) * throwPower;
+    ball.vz = Math.sin(avatar.angleY) * (1 + Math.cos(avatar.angleX)) * throwPower;
 
     ball.vy = Math.sin(avatar.angleX) * throwPower;
 
