@@ -145,6 +145,8 @@ export default class Player {
 
   private onDisconnect = () => {
     if (this.pub.avatar != null) {
+      if (game.pub.ball.playerId === this.pub.id) this.onThrowBall();
+
       game.players.active.splice(game.players.active.indexOf(this), 1);
 
       const team = game.teams[this.pub.avatar.teamIndex];
