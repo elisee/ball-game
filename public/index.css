@@ -50,6 +50,14 @@ body {
   text-align: left;
 }
 
+.sidebar .players .team-0 th {
+  background: #ff8888;
+}
+
+.sidebar .players .team-1 th {
+  background: #8888ff;
+}
+
 .sidebar .log {
   flex: 1 1 0;
   overflow-y: scroll;
@@ -68,7 +76,8 @@ body {
 .sidebar header {
   text-transform: uppercase;
   padding: 0.5em;
-  background: #80deea;
+  background: #AF783C;
+  color: #4a464a;
   font-weight: bold;
 }
 
