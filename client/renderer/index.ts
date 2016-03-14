@@ -56,7 +56,7 @@ export function removePlayer(playerId: string) {
 
 export function setPlayerName(playerId: string, name: string) {
   const model = modelsById[playerId];
-  character.updateNametag(model, name);
+  if (model != null) character.updateNametag(model, name);
 }
 
 export function reset() {
