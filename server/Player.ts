@@ -110,7 +110,7 @@ export default class Player {
       const dx = ball.x - arm.x;
       const dz = ball.z - arm.z;
 
-      const dy = (ball.y > shared.shoulderY) ? ball.y - arm.y : 0;
+      const dy = (ball.y > shared.shoulderY || avatar.jump !== 0) ? ball.y - arm.y : 0;
 
       if (Math.sqrt(dx * dx + dz * dz + dy * dy) <= shared.ballPhysics.catchRadius) {
         ball.playerId = game.lastBallPlayerId = this.pub.id;
