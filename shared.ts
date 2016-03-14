@@ -13,7 +13,7 @@ export const armLength = 0.6;
 export const resetBallDuration = 60;
 
 export const jump = {
-  duration: 15,
+  duration: 20,
   boost: 0.4,
   gravity: 0.05
 };
