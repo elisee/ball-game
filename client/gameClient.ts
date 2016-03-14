@@ -52,7 +52,8 @@ function onWelcome(data: Game.GamePub, playerId: string) {
 
   const myPlayer = players.byId[myPlayerId];
   sidebar.me.setupName(myPlayer.name, false);
-  sidebar.me.setupTeam(myPlayer.avatar != null ? myPlayer.avatar.teamIndex : null, pub.match != null);
+
+  sidebar.me.setupTeam(myPlayer.avatar != null ? myPlayer.avatar.teamIndex : null, myPlayer.avatar != null);
   sidebar.chat.setupInput(false);
 
   if (localStorage["playerName"] != null) sidebar.me.setName(localStorage["playerName"]);
@@ -95,6 +96,9 @@ function onJoinTeam(playerId: string, avatar: Game.AvatarPub) {
 
   sidebar.players.setTeam(playerId, avatar.teamIndex);
   renderer.addPlayer(player);
+
+  const missingPlayers = shared.maxPlayersPerTeam * 2 - Object.keys(players.byId).length;
+  status.setText(`Waiting for ${missingPlayers} more players...`);
 }
 
 function sendInput() {
@@ -160,6 +164,15 @@ function onScore(teamIndex: number) {
 }
 
 function onEndMatch() {
+  let result: string;
+  if (pub.teams[0].score > pub.teams[1].score) result = "Team RED wins!";
+  else if (pub.teams[0].score > pub.teams[1].score) result = "Team BLUE wins!";
+  else result = "It's a tie!";
+  status.setText(result);
+
+  pub.teams[0].score = 0;
+  pub.teams[1].score = 0;
+
   const ball = pub.ball;
   shared.resetBall(ball);
   renderer.resetBall();
@@ -173,7 +186,6 @@ function onEndMatch() {
   renderer.reset();
   pub.match = null;
   sidebar.players.clearTeams();
-  status.setText("Game over!");
 
   sidebar.me.setupTeam(null, false);
 }

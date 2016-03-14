@@ -69,7 +69,10 @@ export default class Player {
     io.in("game").emit("joinTeam", this.pub.id, this.pub.avatar);
 
     // Launch match
-    if (game.pub.match == null && game.players.active.length === shared.maxPlayersPerTeam * 2) {
+    const playersByTeam: { [teamIndex: number]: number; } = { 0: 0, 1: 0 };
+    game.players.all.forEach((x) => { if (x.pub.avatar != null) playersByTeam[x.pub.avatar.teamIndex]++; });
+
+    if (game.pub.match == null && playersByTeam[0] > 0 && playersByTeam[1] > 0) {
       match.start();
     }
 
