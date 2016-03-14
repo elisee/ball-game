@@ -150,12 +150,12 @@ function animate() {
       input.predict(pub.match != null, pub.ball.playerId === myPlayerId, ballThrownTimer > 0);
 
       model.root.position.set(input.prediction.x, 0, input.prediction.z);
-      model.root.setRotationFromEuler(tmpEuler.set(0, -input.prediction.angleY, 0));
+      model.body.setRotationFromEuler(tmpEuler.set(0, -input.prediction.angleY, 0));
       model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, input.prediction.catching || hasBall ? input.prediction.angleX : -Math.PI * 0.4));
     } else {
       // TODO: Lerp between previous and current!
       model.root.position.set(avatar.x, 0, avatar.z);
-      model.root.setRotationFromEuler(tmpEuler.set(0, -avatar.angleY, 0));
+      model.body.setRotationFromEuler(tmpEuler.set(0, -avatar.angleY, 0));
       model.shoulders.setRotationFromEuler(tmpEuler.set(0, 0, avatar.catching || hasBall ? avatar.angleX : -Math.PI * 0.4));
     }
 

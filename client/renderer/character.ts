@@ -22,7 +22,6 @@ const teamMaterials = [
 ];
 
 const nametagGeometry = new THREE.PlaneGeometry(1, 0.5);
-
 const bodyGeometry = new THREE.BoxGeometry(0.4, 0.4, 0.5);
 const headGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 const armGeometry = new THREE.BoxGeometry(0.6, 0.2, 0.2);
@@ -32,7 +31,6 @@ legGeometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, -0.3, 0));
 
 export function makeModel(avatar: Game.AvatarPub, name: string): Model {
   const root = new THREE.Group();
-  root.rotateY(avatar.angleY);
   root.position.x = avatar.x;
   root.position.z = avatar.z;
 
@@ -41,12 +39,13 @@ export function makeModel(avatar: Game.AvatarPub, name: string): Model {
   nametagCanvas.height = 128;
   const nametagCtx = nametagCanvas.getContext("2d");
 
-  const nametagTexture = new THREE.Texture(nametagCanvas);
-  const nametag = new THREE.Mesh(nametagGeometry, new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, map: nametagTexture }))
+  const nametagTexture = new THREE.Texture(nametagCanvas, null, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.NearestFilter, THREE.LinearFilter);
+  const nametag = new THREE.Mesh(nametagGeometry, new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5, map: nametagTexture }));
   nametag.position.y = 1.8;
   root.add(nametag);
 
   const body = new THREE.Mesh(bodyGeometry, teamMaterials[avatar.teamIndex]);
+  body.rotateY(avatar.angleY);
   body.castShadow = true;
   body.receiveShadow = true;
   body.position.y = 0.7;
