@@ -145,7 +145,6 @@ function onTick(data: Game.TickData) {
     if (pub.ball.playerId == null) {
       const { bounce } = shared.tickBall(pub.ball);
       if (bounce > 0) {
-        console.log(bounce);
         audio.playSound(bounceSound, Math.min(0.5, bounce * bounce * 0.5));
       }
     }
