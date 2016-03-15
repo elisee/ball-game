@@ -76,6 +76,7 @@ body {
   flex: 1 1 0;
   overflow-y: scroll;
   padding: 0.5em;
+  word-wrap: break-word;
 }
 
 .sidebar .log > div {
