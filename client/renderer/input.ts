@@ -1,4 +1,8 @@
 import * as shared from "../../shared";
+import { canvas } from "./index";
+
+canvas.addEventListener("keydown", onKeyDown);
+document.addEventListener("keyup", onKeyUp);
 
 let leftStickAngle: number = null;
 let rightStickAngle: number = null;
@@ -21,8 +25,11 @@ export function gather() {
     if (gamepad.axes.length < 2) continue;
     if (gamepad.buttons.length < 8) continue;
     gatherGamepad(gamepad);
+    hasFoundGamepad = true;
     break;
   }
+
+  if (!hasFoundGamepad) gatherKeyboard();
 }
 
 function gatherGamepad(gamepad: Gamepad) {
@@ -45,9 +52,56 @@ function gatherGamepad(gamepad: Gamepad) {
   rightTrigger = gamepad.buttons[7].value > 0.1 ? gamepad.buttons[7].value : 0;
   jumpPressed = gamepad.buttons[4].pressed /* LB */ || gamepad.buttons[5].pressed /* RB */;
 
-  // Left trigger
   wasLeftTriggerDown = isLeftTriggerDown;
   isLeftTriggerDown = gamepad.buttons[6].pressed;
+  hasJustPressedLeftTrigger = !wasLeftTriggerDown && isLeftTriggerDown;
+}
+
+const keys: { [keyCode: number]: boolean; } = {};
+
+function onKeyDown(event: KeyboardEvent) {
+  keys[event.keyCode] = true;
+}
+
+function onKeyUp(event: KeyboardEvent) {
+  keys[event.keyCode] = false;
+}
+
+function gatherKeyboard() {
+  leftStickAngle = null;
+
+  const leftKey = keys[37];
+  const upKey = keys[38];
+  const rightKey = keys[39];
+  const downKey = keys[40];
+
+  if (leftKey) {
+    if (upKey) {
+      leftStickAngle = -Math.PI * 3 / 4;
+    } else if (downKey) {
+      leftStickAngle = Math.PI * 3 / 4;
+    } else {
+      leftStickAngle = Math.PI;
+    }
+  } else if (rightKey) {
+    if (upKey) {
+      leftStickAngle = -Math.PI / 4;
+    } else if (downKey) {
+      leftStickAngle = Math.PI / 4;
+    } else {
+      leftStickAngle = 0;
+    }
+  } else if (downKey) {
+    leftStickAngle = Math.PI / 2;
+  } else if (upKey) {
+    leftStickAngle = -Math.PI / 2;
+  }
+
+  rightTrigger = keys[17] /* Ctrl */ ? 0.5 : 0;
+  jumpPressed = keys[32] /* Space */;
+
+  wasLeftTriggerDown = isLeftTriggerDown;
+  isLeftTriggerDown = keys[88] /* X */;
   hasJustPressedLeftTrigger = !wasLeftTriggerDown && isLeftTriggerDown;
 }
 

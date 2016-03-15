@@ -7,14 +7,14 @@ import ballModel from "./ballModel";
 import ballMarker from "./ballMarker";
 import * as character from "./character";
 
+export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
+
 import * as audio from "./audio";
 import * as input from "./input";
 import { socket, myPlayerId, players, pub } from "../gameClient";
 import * as shared from "../../shared";
 
 const modelsById: { [playerId: string]: character.Model; } = {};
-
-export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 
 const threeRenderer = new THREE.WebGLRenderer({ canvas });
 threeRenderer.shadowMap.enabled = true;
