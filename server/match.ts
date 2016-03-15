@@ -1,10 +1,11 @@
-import { io } from "./index";
+import { io, log } from "./index";
 import * as game from "./game";
 import * as shared from "../shared";
 
 export function start() {
   game.pub.match = { ticksLeft: shared.matchDurationTicks, scoreTimer: 0 };
   io.in("game").emit("startMatch", game.pub.match);
+  log("Match started.");
 }
 
 export function tick() {
@@ -33,6 +34,9 @@ export function tick() {
 }
 
 export function end() {
+  log(`Match ended: ${game.teams[0].pub.score} — ${game.teams[1].pub.score}.`);
+  log(`Players were: ${game.players.active.map((x) => x.pub.name).join(", ")}.`);
+
   game.pub.match = null;
 
   shared.resetBall(game.pub.ball);

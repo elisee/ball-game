@@ -20,3 +20,10 @@ server.listen(port, () => {
 
 import * as game from "./game";
 io.on("connection", (socket) => { game.addPlayer(socket); });
+
+export function log(message: string): void {
+  const date = new Date();
+  const text = `${date.toLocaleDateString()} ${date.toLocaleTimeString()} - ${message}`;
+  console.log(text);
+  return;
+}
