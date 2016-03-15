@@ -61,6 +61,7 @@ const keys: { [keyCode: number]: boolean; } = {};
 
 function onKeyDown(event: KeyboardEvent) {
   keys[event.keyCode] = true;
+  console.log(event.keyCode);
 }
 
 function onKeyUp(event: KeyboardEvent) {
@@ -97,7 +98,9 @@ function gatherKeyboard() {
     leftStickAngle = -Math.PI / 2;
   }
 
-  rightTrigger = keys[17] /* Ctrl */ ? 0.5 : 0;
+  rightStickAngle = leftStickAngle;
+
+  rightTrigger = keys[17] /* Ctrl */ ? 0.5 : (keys[16] ? 1 : 0);
   jumpPressed = keys[32] /* Space */;
 
   wasLeftTriggerDown = isLeftTriggerDown;
