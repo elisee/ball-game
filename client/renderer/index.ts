@@ -18,7 +18,7 @@ export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 
 const threeRenderer = new THREE.WebGLRenderer({ canvas });
 threeRenderer.shadowMap.enabled = true;
-threeRenderer.shadowMap.type = THREE.PCFShadowMap;
+threeRenderer.shadowMap.type = THREE.BasicShadowMap;
 
 const scene = new THREE.Scene();
 scene.add(courtModel.root);
