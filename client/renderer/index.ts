@@ -29,6 +29,7 @@ let animationId: number;
 
 export function start() {
   animationId = requestAnimationFrame(animate);
+  canvas.focus();
 }
 
 export function stop() {

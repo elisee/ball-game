@@ -18,6 +18,10 @@ body {
   justify-content: center;
 }
 
+.main canvas {
+  outline: none;
+}
+
 .main .status {
   position: absolute;
   top: 1em;

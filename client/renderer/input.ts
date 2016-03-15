@@ -3,6 +3,7 @@ import { canvas } from "./index";
 
 canvas.addEventListener("keydown", onKeyDown);
 document.addEventListener("keyup", onKeyUp);
+document.querySelector(".main").addEventListener("click", onClick);
 
 let leftStickAngle: number = null;
 let rightStickAngle: number = null;
@@ -66,6 +67,12 @@ function onKeyDown(event: KeyboardEvent) {
 
 function onKeyUp(event: KeyboardEvent) {
   keys[event.keyCode] = false;
+}
+
+function onClick(event: MouseEvent) {
+  if (event.button !== 0) return;
+
+  canvas.focus();
 }
 
 function gatherKeyboard() {
