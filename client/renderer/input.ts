@@ -62,7 +62,6 @@ const keys: { [keyCode: number]: boolean; } = {};
 
 function onKeyDown(event: KeyboardEvent) {
   keys[event.keyCode] = true;
-  console.log(event.keyCode);
 }
 
 function onKeyUp(event: KeyboardEvent) {
