@@ -46,6 +46,23 @@ body {
 .main .scores .red { color: #f44; }
 .main .scores .blue { color: #44f; }
 
+.main .controls {
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.5);
+  color: #eee;
+  font-size: 1.5em;
+  text-align: center;
+  opacity: 0.5;
+}
+
+.main .controls:hover { opacity: 1; }
+.main .controls div { flex: 1; padding: 1em; }
+
 .sidebar {
   width: 300px;
   display: flex;
